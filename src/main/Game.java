@@ -1,9 +1,8 @@
 package main;
 
-import entities.Player;
-import levels.Level;
-import levels.LevelManager;
-import GameStates.GameStates;
+import gameStates.Menu;
+import gameStates.GameStates;
+import gameStates.Playing;
 
 import java.awt.*;
 
@@ -14,15 +13,14 @@ public class Game implements Runnable {
     private Thread gameThread;
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
-    private Player player;
-    private LevelManager levelManager;
+
+    private Playing playing;
     private Menu menu;
-    private Editor editor;
 
     public final static int TILE_DEFAULT_SIZE = 16;
-    public final static float SCALE = 4f;
-    public final static int TILES_IN_WIDTH = 20;
-    public final static int TILES_IN_HEIGHT = 11;
+    public final static float SCALE = 2f;
+    public final static int TILES_IN_WIDTH = 36;
+    public final static int TILES_IN_HEIGHT = 18;
     public final static int TILES_SIZE = (int)(TILE_DEFAULT_SIZE * SCALE);
     public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
@@ -41,11 +39,8 @@ public class Game implements Runnable {
     }
 
     private void initClasses() {
-        player = new Player(200,200);
-        levelManager = new LevelManager(this);
-        menu = new Menu();
-
-
+        menu = new Menu(this);
+        playing = new Playing(this);
     }
 
     private void startGameLoop()
@@ -55,24 +50,46 @@ public class Game implements Runnable {
     }
 
     public void update() {
-        player.update();
-        levelManager.update();
-    }
+        switch (GameStates.gameState)
+        {
+            case PLAYING:
+                playing.update();
+                break;
 
-    public void render(Graphics g){
-        if(GameStates.gameState == GameStates.GAME)
-        {
-            levelManager.draw(g);
-            player.render(g);
-        } else if (GameStates.gameState == GameStates.MENU)
-        {
-            menu.render(g);
-        } else if (GameStates.gameState == GameStates.EDITOR)
-        {
+            case MENU:
+                menu.update();
+                break;
 
+            case OPTIONS:
+
+                break;
+
+            case QUIT:
+                System.exit(1);
+                break;
         }
 
+    }
 
+    public void render(Graphics g) {
+        switch (GameStates.gameState)
+        {
+            case PLAYING:
+                playing.draw(g);
+                break;
+
+            case MENU:
+                menu.draw(g);
+                break;
+
+            case OPTIONS:
+
+                break;
+
+            case QUIT:
+                //
+                break;
+        }
     }
 
 
@@ -99,14 +116,11 @@ public class Game implements Runnable {
             deltaF += (currentTime - previousTime) / timePerFrame;
             previousTime = currentTime;
 
-            if(GameStates.gameState == GameStates.GAME)
-            {
                 if(deltaU >= 1 ) {   //LOOP-UL ce se ocupa de logica jocului
                     update();
                     updates++;
                     deltaU--;
                 }
-            }
 
 
             if(deltaF >= 1) {   //LOOP-ul ce se ocupa de randarea imaginilor
@@ -128,8 +142,18 @@ public class Game implements Runnable {
 
     }
 
-    public Player getPlayer(){
-        return player;
+    public void windowFocusLost(){
+        if(GameStates.gameState == GameStates.PLAYING) {
+           // playing.getPlayer().resetDirBooleans();
+        }
+    }
+
+    public Menu getMenu(){
+        return menu;
+    }
+
+    public Playing getPlaying(){
+        return  playing;
     }
 
 }

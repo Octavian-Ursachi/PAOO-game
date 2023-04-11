@@ -1,10 +1,11 @@
-package GameStates;
+package gameStates;
 
 public enum GameStates {
 
     MENU,
-    EDITOR,
-    GAME;
+    OPTIONS,
+    QUIT,
+    PLAYING;
 
     public static  GameStates gameState = MENU;
 

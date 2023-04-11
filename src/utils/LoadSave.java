@@ -11,8 +11,19 @@ import java.io.InputStream;
 public class LoadSave {
 
 
+    //PLAYER ATLAS
+    public static final String PLAYER_RUNNING_ATLAS = "Run (32x32).png";
+    public static final String PLAYER_RUNNING_LEFT_ATLAS = "Run left(32x32).png";
+    public static final String PLAYER_IDLE_ATLAS = "Idle (32x32).png";
+
+    public static final String PLAYER_JUMP_ATLAS = "Jump (32x32).png";
+
     public static final String LEVEL_ATLAS = "Terrain (16x16).png";
     public static final String LEVEL_ONE_DATA = "level_one_data.png";
+    public static final String MENU_BUTTONS = "button_atlas.png";
+    public static final String MENU_BACKGROUND = "menu_background.png";
+
+
 
     public static BufferedImage GetSpriteAtlas(String filename){
         BufferedImage image = null;

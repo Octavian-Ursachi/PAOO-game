@@ -1,6 +1,7 @@
 package levels;
 
 import main.Game;
+import org.w3c.dom.Entity;
 import utils.LoadSave;
 
 import java.awt.*;
@@ -8,11 +9,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 
-public class LevelManager {
+public class LevelManager{
 
     private Game game;
     private BufferedImage[] levelSprite;
-    private Level levelOne;
+    private static Level levelOne;
 
     public LevelManager(Game game) {
         this.game = game;
@@ -82,5 +83,12 @@ public class LevelManager {
         g2d.dispose();
         return rotate;
     }
-
+    /*
+    public Rectangle getTileBounds() {
+        return new Rectangle(,,Game.TILES_SIZE,Game.TILES_SIZE);
+    }
+    */
+    public static Level getCurrentLevel(){
+        return levelOne;
+    }
 }
