@@ -1,11 +1,17 @@
 package levels;
 
+import java.awt.image.BufferedImage;
+import java.nio.BufferOverflowException;
+
 public class Level {
 
     private int[][][] lvlData;
 
-    public Level(int[][][] lvlData){
+    private BufferedImage background;
+
+    public Level(int[][][] lvlData, BufferedImage background){
         this.lvlData = lvlData;
+        this.background = background;
 
     }
 
@@ -19,6 +25,10 @@ public class Level {
 
     public int[][][] getLevelData(){
         return lvlData;
+    }
+
+    public BufferedImage getBackground(){
+        return background;
     }
 
 }

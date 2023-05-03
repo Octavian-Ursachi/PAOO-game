@@ -14,7 +14,7 @@ import static main.Game.*;
 public class Menu extends State implements Statemethods {
 
     private MenuButton[] buttons = new MenuButton[3];
-    private BufferedImage backgroundIMG;
+    private BufferedImage backgroundIMG,backgroundIMGgreen;
     private int menuX,menuY,menuWidth,menuHeight;
     public Rectangle playButton = new Rectangle(GAME_WIDTH/2 - 80,150,100,50);
     public Rectangle editorButton = new Rectangle(GAME_WIDTH/2 - 80,250,100,50);
@@ -28,6 +28,7 @@ public class Menu extends State implements Statemethods {
 
     private void loadBackground() {
         backgroundIMG = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);
+        backgroundIMGgreen = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND_GREEN);
         menuWidth = (int)(backgroundIMG.getWidth()/ 1.5 * SCALE);
         menuHeight = (int)(backgroundIMG.getHeight() / 1.5* SCALE);
         menuX = GAME_WIDTH / 2 - menuWidth / 2;
@@ -72,6 +73,7 @@ public class Menu extends State implements Statemethods {
 
     @Override
     public void draw(Graphics g) {
+        g.drawImage(backgroundIMGgreen,0,0,GAME_WIDTH,GAME_HEIGHT,null);
 
         g.drawImage(backgroundIMG,menuX,menuY,menuWidth,menuHeight,null);
 

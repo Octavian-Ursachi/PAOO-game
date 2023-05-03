@@ -12,14 +12,28 @@ import java.awt.image.BufferedImage;
 public class LevelManager{
 
     private Game game;
-    private BufferedImage[] levelSprite;
+    private BufferedImage[] levelSprite,backgroundSprite;
     private static Level levelOne;
 
     public LevelManager(Game game) {
         this.game = game;
+        importBackgroundSprites();
         //levelSprite = LoadSave.GetSpriteAtlas(LoadSave.LEVEL_ATLAS);
         importOutsideSprites();
-        levelOne = new Level(LoadSave.GetLevelData());
+        levelOne = new Level(LoadSave.GetLevelData(),backgroundSprite[2]);
+
+    }
+
+    public void importBackgroundSprites(){
+        backgroundSprite = new BufferedImage[7];
+        backgroundSprite[0] = LoadSave.GetSpriteAtlas("Blue.png");
+        backgroundSprite[1] = LoadSave.GetSpriteAtlas("Brown.png");
+        backgroundSprite[2] = LoadSave.GetSpriteAtlas("Gray.png");
+        backgroundSprite[3] = LoadSave.GetSpriteAtlas("Green.png");
+        backgroundSprite[4] = LoadSave.GetSpriteAtlas("Pink.png");
+        backgroundSprite[5] = LoadSave.GetSpriteAtlas("Purple.png");
+        backgroundSprite[6] = LoadSave.GetSpriteAtlas("Yellow.png");
+
     }
 
     private void importOutsideSprites() {
@@ -33,21 +47,13 @@ public class LevelManager{
             }
     }
 
-    public void draw(Graphics g) {
-        for(int j = 0 ; j < Game.TILES_IN_HEIGHT ; j++)
+    public void draw(Graphics g, int lvlOffset) {
+        for(int j = 0 ; j < levelOne.getLevelData().length ; j++)
             for(int i = 0 ; i < Game.TILES_IN_WIDTH; i++)
             {
                 int index = levelOne.getSpriteIndex(i,j);
-                int rotation=levelOne.getSpriteRotation(i,j);
-                if(rotation == 0)
-                    g.drawImage(levelSprite[index],i*Game.TILES_SIZE,j*Game.TILES_SIZE,Game.TILES_SIZE,Game.TILES_SIZE,null);
-                else if(rotation == 9){
-                    g.drawImage(rotate(levelSprite[index],rotation),i*Game.TILES_SIZE,j*Game.TILES_SIZE,Game.TILES_SIZE,Game.TILES_SIZE,null);
-                } else if(rotation == 18){
-                    g.drawImage(rotate(levelSprite[index],rotation),i*Game.TILES_SIZE,j*Game.TILES_SIZE,Game.TILES_SIZE,Game.TILES_SIZE,null);
-                } else if(rotation == 27){
-                    g.drawImage(rotate(levelSprite[index],rotation),i*Game.TILES_SIZE,j*Game.TILES_SIZE,Game.TILES_SIZE,Game.TILES_SIZE,null);
-                }
+                g.drawImage(levelOne.getBackground(),i*Game.TILES_SIZE,j*Game.TILES_SIZE,Game.TILES_SIZE,Game.TILES_SIZE,null);
+                g.drawImage(levelSprite[index],i*Game.TILES_SIZE,j*Game.TILES_SIZE - lvlOffset,Game.TILES_SIZE,Game.TILES_SIZE,null);
 
             }
         //g.drawImage(levelSprite[17],0,0,null);

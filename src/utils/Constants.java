@@ -4,6 +4,39 @@ import main.Game;
 
 public class Constants {
 
+    public static class EnemyConstant {
+        public static final int PIGGY = 200;
+
+        public static final int IDLE = 0;
+        public static final int HIT = 1;
+        public static final int DEAD = 2;
+
+        public static final int PIGGY_WIDTH_DEFAULT = 34 ;
+        public static final int PIGGY_HEIGHT_DEFAULT = 28 ;
+        public static final int PIGGY_WIDTH = (int)(PIGGY_WIDTH_DEFAULT * Game.SCALE * 1.5) ;
+        public static final int PIGGY_HEIGHT = (int)(PIGGY_HEIGHT_DEFAULT * Game.SCALE * 1.5) ;
+
+        public static final int PIGGY_DRAWOFFSET_X = (int)(14 * Game.SCALE);
+        public static final int PIGGY_DRAWOFFSET_Y = (int)(13 * Game.SCALE);
+
+
+        public static int GetSpriteAmount(int enemy_type,int enemy_state){
+            switch (enemy_type) {
+                case PIGGY:
+                    switch (enemy_state) {
+                        case IDLE:
+                            return 11;
+                        case HIT:
+                            return 2;
+                        case DEAD:
+                            return 4;
+                    }
+            }
+            return 0;
+        }
+
+
+    }
     public static class UI{
         public static class Buttons{
             public static final int B_WIDTH_DEFAULT = 140;
@@ -50,7 +83,7 @@ public class Constants {
                     return 3;
                 }
                 case ATTACK -> {
-                    return 4;
+                    return 1;
                 }
 
 

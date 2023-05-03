@@ -1,13 +1,13 @@
 package entities;
 
+import gameStates.Playing;
 import levels.LevelManager;
 import main.Game;
 import utils.LoadSave;
 
-
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-
 
 import static main.Game.SCALE;
 import static utils.Constants.PlayerConstants.*;
@@ -19,10 +19,11 @@ public class Player extends Entity {
 
     private BufferedImage[] idleAnim, RunAnim,attackAnim, RunAnimleft, jumpAnim,fallAnim;
 
-
     private int[][][] levelData;
 
-    private int animTick, animIndex, animSpeed = 15;
+    private int animTick, animIndex, animSpeed = 15,jCounter = 0;
+    private boolean attackDelay = false;
+    private int attackSpeed = 100;
     private int playerAction = IDLE;
     private boolean moving = false, attacking = false, jumping = false;
     private boolean left, up ,right ,down,jump;
@@ -33,22 +34,35 @@ public class Player extends Entity {
     private double airSpeed = 0f;
     private float gravity = 0.04f* Game.SCALE;
     private double jumpSpeed = -2.25* Game.SCALE;
-    private boolean inAir = false,canDoubleJump = false;
-
+    private boolean inAir = false;
 
     private double fallSpeedAfterCollision = 0.5f * Game.SCALE;
 
-    public Player(float x, float y) {
+    //AtackBox
+    private Rectangle2D.Float attackBox;
+
+    private int flipX = 0;
+    private int flipW = 0;
+    private boolean attackChecked = false;
+    
+    private Playing playing;
+    public Player(float x, float y, Playing playing) {
         super(x, y,TILES_SIZE*2,TILES_SIZE*2);
+        this.playing = playing;
         initHitbox(x+hitboxOffset,y+hitboxOffset,17 * Game.SCALE,18 * Game.SCALE);
+        initAttackBox();
         loadLevelData(LevelManager.getCurrentLevel().getLevelData());
         RunAnim = loadAnimations(LoadSave.PLAYER_RUNNING_ATLAS);
         idleAnim = loadAnimations(LoadSave.PLAYER_IDLE_ATLAS);
-        RunAnimleft = loadAnimations(LoadSave.PLAYER_RUNNING_LEFT_ATLAS);
         jumpAnim = loadAnimations(LoadSave.PLAYER_JUMP_ATLAS);
         fallAnim = loadAnimations("Fall (32x32).png");
+        attackAnim = loadAnimations("Attack (SWORD).png");
 
         //attackAnim = loadAnimations("_Attack.png");
+    }
+
+    private void initAttackBox() {
+        attackBox = new Rectangle2D.Float(x,y,(int)(20* SCALE),(int)(20 * SCALE));
 
     }
 
@@ -57,48 +71,70 @@ public class Player extends Entity {
     }
 
     public void update() {
+        updateAttackBox();
 
         updatePos();
+        if(attacking)
+            checkAttack();
+
         updateAnimationTick();
         setAnimation();
-
     }
 
+    private void checkAttack() {
+        if(attackChecked)
+            return;
+        attackChecked = true;
+        playing.checkEnemyHit(attackBox);
+    }
 
-    public void render(Graphics g) {
+    private void updateAttackBox() {
+        if(right) {
+            attackBox.x = hitbox.x + hitbox.width + (int)(SCALE * 10);
+        } else if (left) {
+            attackBox.x = hitbox.x - hitbox.width - (int)(SCALE * 12);
+        }
+        attackBox.y = hitbox.y + (SCALE * 5);
+    }
+
+    public void render(Graphics g, int lvlOffset) {
+
         if(playerAction == IDLE){
-            g.drawImage(idleAnim[animIndex],(int)(hitbox.x - hitboxOffset),(int)( hitbox.y - hitboxOffset),TILES_SIZE*2,TILES_SIZE*2,null);
-            drawHitbox(g);
+            g.drawImage(idleAnim[animIndex],(int)(hitbox.x - hitboxOffset) + flipX,(int)( hitbox.y - hitboxOffset) - lvlOffset,TILES_SIZE*2 * flipW,TILES_SIZE*2,null);
         }
         if(playerAction == RUNNING) {
-            if(right && !left){
-                g.drawImage(RunAnim[animIndex], (int)(hitbox.x - hitboxOffset),(int)( hitbox.y - hitboxOffset), TILES_SIZE*2,TILES_SIZE*2, null);
-                drawHitbox(g);
-            }
-            else if(left && !right){
-                g.drawImage(RunAnimleft[animIndex], (int)(hitbox.x - hitboxOffset),(int)( hitbox.y - hitboxOffset), TILES_SIZE*2,TILES_SIZE*2, null);
-                drawHitbox(g);
-            }
-            else if(left && right){
-                g.drawImage(idleAnim[animIndex],(int)(hitbox.x - hitboxOffset),(int)( hitbox.y - hitboxOffset),TILES_SIZE*2,TILES_SIZE*2,null);
-                drawHitbox(g);
-            }
-
-        }
-        if(playerAction == ATTACK){
-            g.drawImage(attackAnim[animIndex],(int)(hitbox.x - hitboxOffset),(int)( hitbox.y - hitboxOffset),TILES_SIZE*2,TILES_SIZE*2,null);
-            drawHitbox(g);
+            g.drawImage(RunAnim[animIndex], (int)(hitbox.x - hitboxOffset) + flipX,(int)( hitbox.y - hitboxOffset)- lvlOffset, TILES_SIZE*2 * flipW,TILES_SIZE*2, null);
         }
 
         if(playerAction == JUMP) {
-            g.drawImage(jumpAnim[0], (int) (hitbox.x - hitboxOffset), (int) (hitbox.y - hitboxOffset), TILES_SIZE * 2, TILES_SIZE * 2, null);
-            drawHitbox(g);
+            g.drawImage(jumpAnim[0], (int) (hitbox.x - hitboxOffset) + flipX, (int) (hitbox.y - hitboxOffset)- lvlOffset, TILES_SIZE * 2 * flipW, TILES_SIZE * 2, null);
         }
         if(playerAction == FALLING) {
-            g.drawImage(fallAnim[0], (int) (hitbox.x - hitboxOffset), (int) (hitbox.y - hitboxOffset), TILES_SIZE * 2, TILES_SIZE * 2, null);
-            drawHitbox(g);
+            g.drawImage(fallAnim[0], (int) (hitbox.x - hitboxOffset) + flipX, (int) (hitbox.y - hitboxOffset)- lvlOffset, TILES_SIZE * 2 * flipW, TILES_SIZE * 2, null);
+
+        }
+        if(playerAction == ATTACK){
+            attackDelay = true;
+        }
+        if(attackDelay == true)
+        {
+            g.drawImage(attackAnim[0],(int)(hitbox.x - hitboxOffset + 55),(int)( hitbox.y - hitboxOffset - 10) - lvlOffset,TILES_SIZE*2 * flipW,TILES_SIZE*2,null);
+            attackSpeed--;
+            if(attackSpeed < 0)
+            {
+                attackSpeed = 100;
+                attackDelay = false;
+            }
         }
 
+        drawHitbox(g,lvlOffset);
+        drawAttackBox(g,lvlOffset);
+
+    }
+
+    private void drawAttackBox(Graphics g, int lvlOffset) {
+        g.setColor(Color.RED);
+        g.drawRect((int)attackBox.x,(int)attackBox.y - lvlOffset,(int)attackBox.width,(int)attackBox.height);
     }
 
     private void updateAnimationTick() {
@@ -109,6 +145,7 @@ public class Player extends Entity {
             if (animIndex >= GetSpriteAmount(playerAction)) {
                 animIndex = 0;
                 attacking = false;
+                attackChecked = false;
             }
         }
     }
@@ -132,6 +169,9 @@ public class Player extends Entity {
             else
                 playerAction = FALLING;
 
+            if(attacking)
+                playerAction = ATTACK;
+
         }
 
         if(startAni != playerAction) { //verificam daca schimbam animatia (ex: e setata pe idle si nu s-a terminat si o setam pe animatia de attack)
@@ -144,37 +184,33 @@ public class Player extends Entity {
 
         moving = false;
 
-        if(HelpMethods.IsEntityOnFloor(hitbox,levelData))
-            setCanDoubleJump(true);
-
-
         if(jump) {
-
-            jump();
+            if(jCounter < 2)
+                jump();
         }
-
-        if(canDoubleJump && inAir && jump)
-        {
-            doubleJump();
-        }
-
+        if(!inAir)
+            jCounter=0;
 
         if(!left && !right && !inAir)
             return;
 
         float xSpeed = 0;
 
-        if(left)
+        if(left) {
             xSpeed -= playerSpeed;
-        if (right )
+            flipX = width;
+            flipW = -1;
+        }
+        if (right ) {
             xSpeed += playerSpeed;
-
+            flipX = 0;
+            flipW = 1;
+        }
         if(!inAir){
             if(!HelpMethods.IsEntityOnFloor(hitbox,levelData)) {
                 inAir = true;
             }
         }
-
 
         if(inAir){
 
@@ -196,7 +232,6 @@ public class Player extends Entity {
         moving = true;
     }
 
-
     private void updateXPos(float xSpeed){
 
         if(HelpMethods.canMoveHere(hitbox.x+xSpeed,hitbox.y,hitbox.width,hitbox.height,levelData)) // coliziune
@@ -217,17 +252,6 @@ public class Player extends Entity {
         System.out.println("JUMP!");
     }
 
-    private void doubleJump() {
-
-        if(!inAir)
-            return;
-
-        inAir = true;
-        airSpeed = jumpSpeed;
-        canDoubleJump = false;
-        System.out.println("DOUBLEJUMP!");
-    }
-
 
     private void resetInAir() {
         inAir = false;
@@ -238,7 +262,6 @@ public class Player extends Entity {
         animTick = 0;
         animIndex = 0;
     }
-
 
     private BufferedImage[] loadAnimations(String atlas) {
 
@@ -294,13 +317,17 @@ public class Player extends Entity {
         this.jump = jump;
     }
 
-    public void setCanDoubleJump(boolean jump)
-    {
-        this.canDoubleJump = jump;
+    public void incJCounter() {jCounter++;}
+
+
+    public void resetAll() {
+        inAir = false;
+        attacking = false;
+        moving = false;
+        playerAction = IDLE;
+
+        hitbox.x = x;
+        hitbox.y = y;
+
     }
-
-
-
-
 }
-

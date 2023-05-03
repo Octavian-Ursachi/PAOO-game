@@ -17,9 +17,10 @@ public class HelpMethods {
     }
 
     public static boolean isSolid(float x,float y,int levelData[][][]){
+        int maxHeight = levelData.length * Game.TILES_SIZE;
         if(x < 0 || x >= Game.GAME_WIDTH)
             return true;
-        if(y < 0 || y >= Game.GAME_HEIGHT)
+        if(y < 0 || y >= maxHeight)
             return true;
 
         float xIndex = x / Game.TILES_SIZE;
@@ -40,7 +41,7 @@ public class HelpMethods {
             //Right
             int nextXPos = nextTile * Game.TILES_SIZE;
             System.out.println(hitbox.width + ":" + Game.TILES_SIZE);
-            return  currentTile * Game.TILES_SIZE + 29 ;
+            return  currentTile * Game.TILES_SIZE + 14*Game.SCALE ;
         }else {
             //Left
             return currentTile * Game.TILES_SIZE;
@@ -55,7 +56,7 @@ public class HelpMethods {
             // Falling
             int nextYPos = nextTile * Game.TILES_SIZE;
             int tileYpos = currentTile * Game.TILES_SIZE;
-            return currentTile * Game.TILES_SIZE+ 27;
+            return currentTile * Game.TILES_SIZE+ 13*Game.SCALE;
         }else {
             // Jumping
             return currentTile * Game.TILES_SIZE;
@@ -63,8 +64,8 @@ public class HelpMethods {
     }
 
     public static boolean IsEntityOnFloor (Rectangle2D.Float hitbox,int[][][] lvlData) {
-        if(!isSolid(hitbox.x+hitbox.width, hitbox.y+hitbox.height+10, lvlData)) //colt dreapta jos
-            if(!isSolid(hitbox.x, hitbox.y+hitbox.height+10, lvlData)) //colt stanga jos
+        if(!isSolid(hitbox.x+hitbox.width, hitbox.y+hitbox.height+5*Game.SCALE, lvlData)) //colt dreapta jos
+            if(!isSolid(hitbox.x, hitbox.y+hitbox.height+5*Game.SCALE, lvlData)) //colt stanga jos
                 return false;
         return true;
 
