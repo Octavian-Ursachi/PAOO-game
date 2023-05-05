@@ -16,9 +16,6 @@ public class Menu extends State implements Statemethods {
     private MenuButton[] buttons = new MenuButton[3];
     private BufferedImage backgroundIMG,backgroundIMGgreen;
     private int menuX,menuY,menuWidth,menuHeight;
-    public Rectangle playButton = new Rectangle(GAME_WIDTH/2 - 80,150,100,50);
-    public Rectangle editorButton = new Rectangle(GAME_WIDTH/2 - 80,250,100,50);
-    public Rectangle quitButton = new Rectangle(GAME_WIDTH/2 - 80,350,100,50);
 
     public Menu(Game game) {
         super(game);
@@ -68,6 +65,7 @@ public class Menu extends State implements Statemethods {
     public void update() {
         for(MenuButton mb : buttons)
             mb.update();
+
 
     }
 

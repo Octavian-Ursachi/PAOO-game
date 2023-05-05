@@ -127,8 +127,8 @@ public class Player extends Entity {
             }
         }
 
-        drawHitbox(g,lvlOffset);
-        drawAttackBox(g,lvlOffset);
+        //drawHitbox(g,lvlOffset);
+        //drawAttackBox(g,lvlOffset);
 
     }
 

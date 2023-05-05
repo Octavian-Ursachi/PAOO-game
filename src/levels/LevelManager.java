@@ -63,32 +63,6 @@ public class LevelManager{
     public void update() {
 
     }
-
-    public BufferedImage rotate(BufferedImage imagineAux,int unghi) {
-        // Calculate the new size of the image based on the angle of rotaion
-        unghi = unghi * 10;
-        double radians = Math.toRadians(unghi);
-        double sin = Math.abs(Math.sin(radians));
-        double cos = Math.abs(Math.cos(radians));
-        int newWidth = (int) Math.round(imagineAux.getWidth() * cos + imagineAux.getHeight() * sin);
-        int newHeight = (int) Math.round(imagineAux.getWidth() * sin + imagineAux.getHeight() * cos);
-
-        // Create a new image
-        BufferedImage rotate = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = rotate.createGraphics();
-        // Calculate the "anchor" point around which the image will be rotated
-        int x = (newWidth - imagineAux.getWidth()) / 2;
-        int y = (newHeight - imagineAux.getHeight()) / 2;
-        // Transform the origin point around the anchor point
-        AffineTransform at = new AffineTransform();
-        at.setToRotation(radians, x + ((float)imagineAux.getWidth() / 2), y + ((float)imagineAux.getHeight() / 2));
-        at.translate(x, y);
-        g2d.setTransform(at);
-        // Paint the originl image
-        g2d.drawImage(imagineAux, 0, 0, null);
-        g2d.dispose();
-        return rotate;
-    }
     /*
     public Rectangle getTileBounds() {
         return new Rectangle(,,Game.TILES_SIZE,Game.TILES_SIZE);

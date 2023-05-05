@@ -8,6 +8,8 @@ import java.awt.*;
 
 public class Game implements Runnable {
 
+
+    private static volatile Game instance; // pentru Sablonul de proiectare
     private GameWindow gameWindow;
     private GamePanel gamePanel;
     private Thread gameThread;
@@ -26,7 +28,7 @@ public class Game implements Runnable {
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
 
 
-    public Game() {
+    private Game() {
 
         initClasses();
 
@@ -36,6 +38,19 @@ public class Game implements Runnable {
         gamePanel.requestFocus();
 
         startGameLoop();
+    }
+
+    public static Game getInstance() { //Sablon de proiectare de tip singleton
+        Game result = instance;
+        if(result == null) {
+            synchronized (Game.class) {
+                result = instance;
+                if(result == null) {
+                    instance = result = new Game();
+                }
+            }
+        }
+        return result;
     }
 
     private void initClasses() {
