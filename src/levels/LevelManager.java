@@ -6,6 +6,7 @@ import utils.LoadSave;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BandCombineOp;
 import java.awt.image.BufferedImage;
 
 
@@ -13,6 +14,7 @@ public class LevelManager{
 
     private Game game;
     private BufferedImage[] levelSprite,backgroundSprite;
+    private BufferedImage Background_farForest;
     private static Level levelOne;
 
     public LevelManager(Game game) {
@@ -25,6 +27,7 @@ public class LevelManager{
     }
 
     public void importBackgroundSprites(){
+        Background_farForest = LoadSave.GetSpriteAtlas("Forestpathday.jpg");
         backgroundSprite = new BufferedImage[7];
         backgroundSprite[0] = LoadSave.GetSpriteAtlas("Blue.png");
         backgroundSprite[1] = LoadSave.GetSpriteAtlas("Brown.png");
@@ -48,11 +51,12 @@ public class LevelManager{
     }
 
     public void draw(Graphics g, int lvlOffset) {
+
+        g.drawImage(Background_farForest,0,0,Game.TILES_SIZE*Game.TILES_IN_WIDTH,Game.TILES_SIZE*Game.TILES_IN_HEIGHT,null);
         for(int j = 0 ; j < levelOne.getLevelData().length ; j++)
             for(int i = 0 ; i < Game.TILES_IN_WIDTH; i++)
             {
                 int index = levelOne.getSpriteIndex(i,j);
-                g.drawImage(levelOne.getBackground(),i*Game.TILES_SIZE,j*Game.TILES_SIZE,Game.TILES_SIZE,Game.TILES_SIZE,null);
                 g.drawImage(levelSprite[index],i*Game.TILES_SIZE,j*Game.TILES_SIZE - lvlOffset,Game.TILES_SIZE,Game.TILES_SIZE,null);
 
             }

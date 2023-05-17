@@ -17,6 +17,7 @@ public class LoadSave {
 
 
     //PLAYER ATLAS
+    public static int nrStartPigs;
     public static final String PLAYER_RUNNING_ATLAS = "Run (32x32).png";
     public static final String PLAYER_RUNNING_LEFT_ATLAS = "Run left(32x32).png";
     public static final String PLAYER_IDLE_ATLAS = "Idle (32x32).png";
@@ -29,7 +30,9 @@ public class LoadSave {
     public static final String MENU_BACKGROUND = "menu_background.png";
     public static final String MENU_BACKGROUND_GREEN = "Green.png";
     public static final String PIGGY_SPRITE = "PigSprite.png";
-
+    public static final String SHURIKEN_SPRITE = "myShuriken.png";
+    public static final String SHURIKEN_EMPTY_SLOT = "UsedShuriken.png";
+    public static final String SHURIKEN_FULL_SLOT = "ReadyShuriken.png";
 
 
     public static BufferedImage GetSpriteAtlas(String filename){
@@ -51,6 +54,7 @@ public class LoadSave {
     }
 
     public static ArrayList<Piggy> GetPigs() {
+        nrStartPigs = 0;
         BufferedImage img = GetSpriteAtlas(LEVEL_ONE_DATA);
         ArrayList<Piggy> list = new ArrayList<>();
         for(int j = 0 ; j < img.getHeight() ; j++)
@@ -58,8 +62,10 @@ public class LoadSave {
             {
                 Color color = new Color(img.getRGB(i,j));
                 int entityType = color.getGreen();
-                if(entityType == PIGGY)
-                    list.add(new Piggy(i*Game.TILES_SIZE,j*Game.TILES_SIZE));
+                if(entityType == PIGGY) {
+                    list.add(new Piggy(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
+                    nrStartPigs++;
+                }
             }
         return list;
     }

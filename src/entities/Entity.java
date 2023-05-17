@@ -19,7 +19,7 @@ public abstract class Entity {
     }
 
     protected void initHitbox(float x, float y, float width, float height) {
-        hitbox = new Rectangle2D.Float((int) x,(int) y,width,height);
+        hitbox = new Rectangle2D.Float((int) x ,(int) y ,width,height);
     }
 
 //    public void updateHitbox() {
@@ -28,7 +28,7 @@ public abstract class Entity {
 //    }
 
     public void drawHitbox(Graphics g,int yLvlOffset){
-        g.setColor(Color.magenta);
+        g.setColor(Color.BLACK);
         g.drawRect((int) hitbox.x,(int) hitbox.y - yLvlOffset, (int) hitbox.width,(int) hitbox.height);
     }
 

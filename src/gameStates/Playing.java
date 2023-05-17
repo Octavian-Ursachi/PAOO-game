@@ -3,9 +3,13 @@ package gameStates;
 
 import entities.EnemyManager;
 import entities.Player;
+import entities.Shuriken;
 import levels.LevelManager;
 import main.Game;
 import ui.GameOverOverlay;
+import ui.StarMenu;
+import ui.StopWatch;
+import ui.TopBar;
 import utils.LoadSave;
 
 import java.awt.*;
@@ -22,6 +26,10 @@ public class Playing extends State implements Statemethods {
     private boolean releaseToJumpAgain = true;
     private LevelManager levelManager;
     private GameOverOverlay gameOverOverlay;
+    private TopBar topBar;
+    private StopWatch timer;
+
+    private StarMenu starMenu;
 
     private int yLvlOffset;
     private int midBorder = (int) (0.5 * Game.GAME_HEIGHT); // pentru nivele care depasesc height-ul camerei
@@ -41,6 +49,9 @@ public class Playing extends State implements Statemethods {
         player = new Player(100,200,this);
         enemyManager = new EnemyManager(this);
         gameOverOverlay = new GameOverOverlay(this);
+        timer = new StopWatch(this);
+        topBar = new TopBar(this,timer,player);
+        starMenu = new StarMenu(this);
 
     }
 
@@ -56,6 +67,9 @@ public class Playing extends State implements Statemethods {
             player.update();
             enemyManager.update();
             checkCloseToBorder();
+            timer.startTimer();
+            if(gameOver)
+                timer.stop();
         }
     }
 
@@ -77,9 +91,19 @@ public class Playing extends State implements Statemethods {
         levelManager.draw(g,yLvlOffset);
         player.render(g,yLvlOffset);
         enemyManager.draw(g,yLvlOffset);
+        topBar.draw(g);
 
         if(gameOver)
-            gameOverOverlay.draw(g);
+        {
+            System.out.println(timer.getElapsedTime());
+            if(timer.getElapsedTime() > 10) {
+                gameOverOverlay.draw(g);
+            } else {
+                starMenu.draw(g);
+            }
+        }
+
+
 
     }
 
@@ -87,6 +111,7 @@ public class Playing extends State implements Statemethods {
         gameOver = false;
         player.resetAll();
         enemyManager.resetAllEnemies();
+        timer.resetAll();
     }
 
     public void setGameOver(boolean gameOver) {
@@ -95,6 +120,9 @@ public class Playing extends State implements Statemethods {
 
     public void checkEnemyHit(Rectangle2D.Float attackBox) {
         enemyManager.checkEnemyHit(attackBox);
+    }
+    public void checkEnemyHitWithShuriken(Shuriken[] shurikens) {
+        enemyManager.checkEnemyHitWithShuriken(shurikens);
     }
 
     @Override
@@ -133,17 +161,16 @@ public class Playing extends State implements Statemethods {
                     player.setAttacking(true);
                     break;
                 case KeyEvent.VK_SPACE:
-                    if(releaseToJumpAgain) {
-                        player.setJump(true);
-                    }
-                    if(!releaseToJumpAgain)
-                    {
-                        player.setJump(false);
-                    }
-                    releaseToJumpAgain = false;
+                    player.setJump(true);
                     break;
                 case KeyEvent.VK_BACK_SPACE:
                     GameStates.gameState = GameStates.MENU;
+                    break;
+                case KeyEvent.VK_X:
+                    player.setThrowShuriken(true);
+                    break;
+                case KeyEvent.VK_R:
+                    resetAll();
                     break;
             }
     }
@@ -161,10 +188,10 @@ public class Playing extends State implements Statemethods {
                 player.setAttacking(false);
                 break;
             case KeyEvent.VK_SPACE:
-                releaseToJumpAgain = true;
                 player.setJump(false);
-                player.incJCounter();
+                player.setFirstJump(true);
                 break;
         }
     }
+
 }

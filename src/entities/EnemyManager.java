@@ -1,6 +1,7 @@
 package entities;
 
 import gameStates.Playing;
+import main.Game;
 import utils.LoadSave;
 
 import java.awt.*;
@@ -16,6 +17,7 @@ public class EnemyManager {
     private Playing playing;
     private BufferedImage[][] piggyArr;
     private ArrayList<Piggy> piggies = new ArrayList<>();
+    private boolean allEnemyDead = false;
     public EnemyManager(Playing playing) {
         this.playing = playing;
         loadEnemyImager();
@@ -27,10 +29,19 @@ public class EnemyManager {
     }
 
     public void update(){
+        allEnemyDead = true;
         for(Piggy p : piggies) {
-            if (p.isActive())
+            if (p.isActive()) {
                 p.update();
+                allEnemyDead = false;
+            }
+            else {
+                p.hitbox.x = 3000;
+                p.hitbox.y = 3000;
+            }
         }
+        if(allEnemyDead)
+            playing.setGameOver(true);
 
     }
 
@@ -42,21 +53,28 @@ public class EnemyManager {
         for(Piggy p : piggies)
             if(p.isActive())
                 if(p.x > playing.getPlayer().hitbox.x) {
-                    g.drawImage(piggyArr[p.getEnemyState()][p.getAniIndex()], (int) p.getHitbox().x, (int) p.getHitbox().y - yLvlOffset, PIGGY_WIDTH, PIGGY_HEIGHT, null);
+                    g.drawImage(piggyArr[p.getEnemyState()][p.getAniIndex()], (int) p.getHitbox().x - PIGGY_DRAWOFFSET_X, (int) p.getHitbox().y - PIGGY_DRAWOFFSET_Y - yLvlOffset, PIGGY_WIDTH, PIGGY_HEIGHT, null);
                 } else {
-                    g.drawImage(piggyArr[p.getEnemyState()][p.getAniIndex()], (int) p.getHitbox().x + PIGGY_WIDTH, (int) p.getHitbox().y - yLvlOffset, -PIGGY_WIDTH, PIGGY_HEIGHT, null);
+                    g.drawImage(piggyArr[p.getEnemyState()][p.getAniIndex()], (int) (p.getHitbox().x - PIGGY_DRAWOFFSET_X + p.width + 20), (int) p.getHitbox().y - PIGGY_DRAWOFFSET_Y - yLvlOffset, -PIGGY_WIDTH, PIGGY_HEIGHT, null); // la x trebuie sa-mi dau seama ce sa fac in loc sa adaug + 20
 
                 }
     }
 
     public void checkEnemyHit(Rectangle2D.Float attackBox) {
-        for(Piggy p : piggies)
-            if(attackBox.intersects(p.getHitbox()) && p.isActive()) {
+        for(Piggy p : piggies) {
+            if (attackBox.intersects(p.getHitbox()) && p.isActive()) {
                 p.newState(DEAD);
-                p.setPiggyNR(p.getPiggyNR()-1);
-                if(p.getPiggyNR() == 0)
-                    playing.setGameOver(true);
             }
+        }
+    }
+    public void checkEnemyHitWithShuriken(Shuriken[] shurikens) {
+        for(Piggy p : piggies) {
+            for(int i = 0 ; i < 3 ; i++) {
+                if (shurikens[i].getHitbox().intersects(p.getHitbox()) && p.isActive() && shurikens[i].active) {
+                    p.newState(DEAD);
+                }
+            }
+        }
     }
 
     private void loadEnemyImager() {
@@ -70,7 +88,12 @@ public class EnemyManager {
     }
 
     public void resetAllEnemies() {
-        for(Piggy p : piggies)
+        for(Piggy p : piggies) {
             p.resetEnemy();
+        }
+
+
+
     }
+
 }

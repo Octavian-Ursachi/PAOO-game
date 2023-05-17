@@ -21,7 +21,7 @@ public class Player extends Entity {
 
     private int[][][] levelData;
 
-    private int animTick, animIndex, animSpeed = 15,jCounter = 0;
+    private int animTick, animIndex, animSpeed = 15;
     private boolean attackDelay = false;
     private int attackSpeed = 100;
     private int playerAction = IDLE;
@@ -36,7 +36,12 @@ public class Player extends Entity {
     private double jumpSpeed = -2.25* Game.SCALE;
     private boolean inAir = false;
 
+    private static boolean canDoubleJump = true;
+    private boolean firstJump = true;
+
+
     private double fallSpeedAfterCollision = 0.5f * Game.SCALE;
+
 
     //AtackBox
     private Rectangle2D.Float attackBox;
@@ -44,13 +49,20 @@ public class Player extends Entity {
     private int flipX = 0;
     private int flipW = 0;
     private boolean attackChecked = false;
-    
     private Playing playing;
+    public boolean hasMoved = false;
+
+    //Shurikens
+    private Shuriken[] shurikens = new Shuriken[3];
+    private boolean throwShuriken;
+
+
     public Player(float x, float y, Playing playing) {
         super(x, y,TILES_SIZE*2,TILES_SIZE*2);
         this.playing = playing;
         initHitbox(x+hitboxOffset,y+hitboxOffset,17 * Game.SCALE,18 * Game.SCALE);
         initAttackBox();
+        initShurikens();
         loadLevelData(LevelManager.getCurrentLevel().getLevelData());
         RunAnim = loadAnimations(LoadSave.PLAYER_RUNNING_ATLAS);
         idleAnim = loadAnimations(LoadSave.PLAYER_IDLE_ATLAS);
@@ -61,7 +73,37 @@ public class Player extends Entity {
         //attackAnim = loadAnimations("_Attack.png");
     }
 
-    private void initAttackBox() {
+    public void throwShuriken() {
+        if(throwShuriken) {
+            for(int i = 0 ; i < 3 ; i++) {
+                if(!shurikens[i].used) {
+                    if(shurikens[i].getDir() != 0) {
+                        shurikens[i].setDir(flipW);
+                    }
+                    shurikens[i].used = true;
+                    shurikens[i].active = true;
+                    System.out.println("SHURIKEN THROWED!!!");
+                    break;
+                }
+            }
+        }
+        throwShuriken = false;
+    }
+
+    public void initShurikens() {
+        for(int i = 0 ; i < 3 ; i++) {
+            shurikens[i] = new Shuriken(hitbox.x, hitbox.y, this,levelData);
+        }
+
+    }
+
+    public boolean allShurikenUsed() {
+        if(shurikens[0].used && shurikens[1].used && shurikens[2].used)
+            return true;
+        return false;
+    }
+
+    public void initAttackBox() {
         attackBox = new Rectangle2D.Float(x,y,(int)(20* SCALE),(int)(20 * SCALE));
 
     }
@@ -76,6 +118,13 @@ public class Player extends Entity {
         updatePos();
         if(attacking)
             checkAttack();
+        checkShurikenAttack();
+
+        if(throwShuriken)
+            throwShuriken();
+        for(int i = 0 ; i < 3 ; i++) {
+                shurikens[i].updatePos(levelData);
+        }
 
         updateAnimationTick();
         setAnimation();
@@ -85,7 +134,14 @@ public class Player extends Entity {
         if(attackChecked)
             return;
         attackChecked = true;
-        playing.checkEnemyHit(attackBox);
+            playing.checkEnemyHit(attackBox);
+    }
+
+    private void checkShurikenAttack() {
+        if(!shurikens[0].active && !shurikens[1].active && !shurikens[2].active) {
+            return;
+        }
+        playing.checkEnemyHitWithShuriken(shurikens);
     }
 
     private void updateAttackBox() {
@@ -124,6 +180,12 @@ public class Player extends Entity {
             {
                 attackSpeed = 100;
                 attackDelay = false;
+            }
+        }
+
+        for(int i = 0 ; i < 3 ; i++) {
+            if(shurikens[i].active) {
+                shurikens[i].draw(g,lvlOffset);
             }
         }
 
@@ -184,12 +246,8 @@ public class Player extends Entity {
 
         moving = false;
 
-        if(jump) {
-            if(jCounter < 2)
-                jump();
-        }
-        if(!inAir)
-            jCounter=0;
+        if(jump)
+            jump();
 
         if(!left && !right && !inAir)
             return;
@@ -200,11 +258,13 @@ public class Player extends Entity {
             xSpeed -= playerSpeed;
             flipX = width;
             flipW = -1;
+            hasMoved = true;
         }
         if (right ) {
             xSpeed += playerSpeed;
             flipX = 0;
             flipW = 1;
+            hasMoved = true;
         }
         if(!inAir){
             if(!HelpMethods.IsEntityOnFloor(hitbox,levelData)) {
@@ -244,18 +304,27 @@ public class Player extends Entity {
     }
 
     private void jump() {
-        if(inAir) {
+        if((inAir) && !canDoubleJump) {
             return;
         }
-        inAir = true;
-        airSpeed = jumpSpeed;
-        System.out.println("JUMP!");
+        if(!inAir && firstJump) {
+            inAir = true;
+            firstJump = false;
+            airSpeed = jumpSpeed;
+        } else if(inAir && firstJump) {
+            inAir = true;
+            airSpeed = jumpSpeed;
+            canDoubleJump = false;
+        }
+        hasMoved = true;
+
     }
 
 
     private void resetInAir() {
         inAir = false;
         airSpeed = 0;
+        canDoubleJump = true;
     }
 
     private void resetAniTick() {
@@ -274,6 +343,12 @@ public class Player extends Entity {
             }
 
             return type;
+    }
+
+    public void setThrowShuriken(boolean throwShuriken) {this.throwShuriken = throwShuriken;}
+
+    public Shuriken[] getShurikens() {
+        return shurikens;
     }
 
     public void setAttacking(boolean attacking){
@@ -317,14 +392,21 @@ public class Player extends Entity {
         this.jump = jump;
     }
 
-    public void incJCounter() {jCounter++;}
-
+    public void setFirstJump(boolean released)
+    {
+        this.firstJump = released;
+    }
 
     public void resetAll() {
         inAir = false;
         attacking = false;
         moving = false;
+        hasMoved = false;
         playerAction = IDLE;
+        for(int i = 0 ; i < 3 ; i++) {
+            shurikens[i].used = false;
+            shurikens[i].active = false;
+        }
 
         hitbox.x = x;
         hitbox.y = y;

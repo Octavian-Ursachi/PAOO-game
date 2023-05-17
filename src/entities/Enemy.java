@@ -17,6 +17,8 @@ public abstract class Enemy extends Entity{
 
     protected void newState(int enemyState) {
         this.enemyState = enemyState;
+        if(this.enemyState == DEAD)
+            active = false;
         aniTick = 0;
         aniIndex = 0;
     }
@@ -34,8 +36,8 @@ public abstract class Enemy extends Entity{
     }
 
     public void resetEnemy() {
-        hitbox.x = x-60;
-        hitbox.y = y-50;
+        hitbox.x = x;
+        hitbox.y = y-10;
         newState(IDLE);
         active = true;
     }

@@ -4,6 +4,17 @@ import main.Game;
 
 public class Constants {
 
+    public static class ShurikenConstant {
+        public static final int SHURIKEN_WIDTH_DEFAULT = 10;
+        public static final int SHURIKEN_HEIGHT_DEFAULT = 2;
+        public static final int SHURIKEN_DRAW_WIDTH = (int)(20 * Game.SCALE);
+        public static final int SHURIKEN_DRAW_HEIGHT = (int)(15 * Game.SCALE);
+        public static final int SHURIKEN_WIDTH = (int)(SHURIKEN_WIDTH_DEFAULT * Game.SCALE);
+        public static final int SHURIKEN_HEIGHT = (int)(SHURIKEN_HEIGHT_DEFAULT * Game.SCALE);
+        public static final float SHURIKEN_SPEED = 2f * Game.SCALE;
+        public static final int SHURIKEN_POS_OFFSET = 20;
+    }
+
     public static class EnemyConstant {
         public static final int PIGGY = 200;
 
@@ -16,8 +27,8 @@ public class Constants {
         public static final int PIGGY_WIDTH = (int)(PIGGY_WIDTH_DEFAULT * Game.SCALE * 1.5) ;
         public static final int PIGGY_HEIGHT = (int)(PIGGY_HEIGHT_DEFAULT * Game.SCALE * 1.5) ;
 
-        public static final int PIGGY_DRAWOFFSET_X = (int)(14 * Game.SCALE);
-        public static final int PIGGY_DRAWOFFSET_Y = (int)(13 * Game.SCALE);
+        public static final int PIGGY_DRAWOFFSET_X = (int)(18 * Game.SCALE);
+        public static final int PIGGY_DRAWOFFSET_Y = (int)(16 * Game.SCALE);
 
 
         public static int GetSpriteAmount(int enemy_type,int enemy_state){
