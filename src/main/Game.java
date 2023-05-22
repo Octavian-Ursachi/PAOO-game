@@ -3,12 +3,14 @@ package main;
 import gameStates.Menu;
 import gameStates.GameStates;
 import gameStates.Playing;
+import dataBases.DataBaseManager;
+import utils.LoadSave;
 
 import java.awt.*;
 
 public class Game implements Runnable {
 
-
+    private DataBaseManager dataBaseManager;
     private static volatile Game instance; // pentru Sablonul de proiectare
     private GameWindow gameWindow;
     private GamePanel gamePanel;
@@ -30,7 +32,10 @@ public class Game implements Runnable {
 
     private Game() {
 
+        LoadSave.GetAllLevels();
         initClasses();
+
+        dataBaseManager = new DataBaseManager();
 
         gamePanel = new GamePanel(this);
         gameWindow = new GameWindow(gamePanel);

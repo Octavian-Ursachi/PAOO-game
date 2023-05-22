@@ -55,6 +55,9 @@ public class TopBar {
                 g.drawImage(shurikenSlots[0],80 + Game.TILES_IN_WIDTH * i,60,Game.TILES_SIZE/2,Game.TILES_SIZE/2,null);
 
         }
+        //BEST
+        g.setFont(new Font("Arial", Font.BOLD, 10));
+        g.drawString("BEST TIME",Game.GAME_WIDTH-150,40);
 
     }
 

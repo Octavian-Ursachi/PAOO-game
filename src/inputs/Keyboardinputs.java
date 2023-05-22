@@ -32,6 +32,7 @@ public class Keyboardinputs implements KeyListener {
 
             case PLAYING:
                 gamePanel.getGame().getPlaying().KeyPressed(e);
+                gamePanel.getGame().getPlaying().getStarMenu().KeyPressed(e);
                 break;
         }
     }

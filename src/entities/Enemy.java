@@ -4,14 +4,16 @@ import static utils.Constants.EnemyConstant.*;
 
 public abstract class Enemy extends Entity{
 
-    private int aniIndex,enemyState,enemyType;
+    private int aniIndex,enemyState,enemyType,deathAnimType;
     private int aniTick,aniSpeed = 25;
+    protected boolean oneTimeDeadAnim = false;
 
     protected boolean active = true;
 
-    public Enemy(float x, float y, int width, int height,int enemyType) {
+    public Enemy(float x, float y, int width, int height,int enemyType,int deathAnimType) {
         super(x, y, width, height);
         this.enemyType = enemyType;
+        this.deathAnimType = deathAnimType;
         initHitbox(x,y,width,height);
     }
 
@@ -30,8 +32,9 @@ public abstract class Enemy extends Entity{
             aniIndex++;
             if(aniIndex >= GetSpriteAmount(enemyType,enemyState)) {
                 aniIndex = 0;
-            } else if (enemyState == DEAD)
+            } else if (enemyState == DEAD) {
                 active = false;
+            }
         }
     }
 
@@ -40,6 +43,7 @@ public abstract class Enemy extends Entity{
         hitbox.y = y-10;
         newState(IDLE);
         active = true;
+        oneTimeDeadAnim = false;
     }
 
     public void update() {

@@ -21,7 +21,7 @@ public class StopWatch {
         timer = new Timer(1, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                elapsedTime += 0.01f;
+                elapsedTime += 0.0155f;
             }
         });
     }

@@ -1,9 +1,15 @@
 package utils;
 
+import entities.Piggy;
 import main.Game;
 import org.ietf.jgss.GSSManager;
 
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
+import static utils.Constants.EnemyConstant.PIGGY;
 
 public class HelpMethods {
 
@@ -27,7 +33,7 @@ public class HelpMethods {
         float yIndex = y / Game.TILES_SIZE;
 
         int value = levelData[(int) yIndex][(int) xIndex][0];
-        if(value != 5)
+        if(value != 5 && value!=255)
             return true;
         return false;
     }
@@ -73,6 +79,38 @@ public class HelpMethods {
         //if(!isSolid(x+width,y,levelData)) //colt dreapta jos
         //                if(!isSolid(x,y+height,levelData)) //colt stanga jos
         //
+    }
+
+    public static int[][][] GetLevelData(BufferedImage img) {
+        int[][][] lvlData = new int[img.getHeight()][img.getWidth()][2];
+        for(int j = 0 ; j < img.getHeight() ; j++)
+            for(int i = 0; i < img.getWidth(); i++)
+            {
+                Color color = new Color(img.getRGB(i,j));
+                int tileType = color.getRed();
+                int rotation = color.getBlue();
+                if(tileType >= 242)
+                    tileType = 5;
+                if(rotation >= 36)
+                    rotation = 0;
+                lvlData[j][i][0] = tileType;
+                lvlData[j][i][1] = rotation;
+            }
+        return lvlData;
+    }
+
+    public static ArrayList<Piggy> GetPigs(BufferedImage img) {
+        ArrayList<Piggy> list = new ArrayList<>();
+        for(int j = 0 ; j < img.getHeight() ; j++)
+            for(int i = 0; i <img.getWidth(); i++)
+            {
+                Color color = new Color(img.getRGB(i,j));
+                int entityType = color.getGreen();
+                if(entityType == PIGGY) {
+                    list.add(new Piggy(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
+                }
+            }
+        return list;
     }
 
 

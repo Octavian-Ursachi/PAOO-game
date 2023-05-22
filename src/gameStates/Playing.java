@@ -22,37 +22,56 @@ public class Playing extends State implements Statemethods {
     private Player player;
 
     private EnemyManager enemyManager;
-
-    private boolean releaseToJumpAgain = true;
     private LevelManager levelManager;
     private GameOverOverlay gameOverOverlay;
     private TopBar topBar;
     private StopWatch timer;
-
+    private boolean levelCompleted = false;
     private StarMenu starMenu;
 
     private int yLvlOffset;
     private int midBorder = (int) (0.5 * Game.GAME_HEIGHT); // pentru nivele care depasesc height-ul camerei
-    private int lvlTilesHeight = LoadSave.GetLevelData().length;
-    private int maxTilesOffset = lvlTilesHeight - Game.TILES_IN_HEIGHT;
-    private int maxLvlOffsetY = maxTilesOffset * Game.TILES_SIZE;
+//    private int lvlTilesHeight = LoadSave.GetLevelData().length;
+//    private int maxTilesOffset = lvlTilesHeight - Game.TILES_IN_HEIGHT;
+    private int maxLvlOffsetY;
 
     private boolean gameOver;
 
     public Playing(Game game) {
         super(game);
         initClasses();
+        
+        calcLvlOffset();
+        loadStartLevel();
+    }
+
+
+    public void loadNextLevel() {
+        resetAll();
+        levelManager.loadNextLevel();
+    }
+    private void loadStartLevel() {
+        enemyManager.loadEnemies(levelManager.getCurrentLevel());
+    }
+
+    private void calcLvlOffset() {
+        maxLvlOffsetY = levelManager.getCurrentLevel().getLvlOffset();
     }
 
     private void initClasses() {
         levelManager = new LevelManager(game);
-        player = new Player(100,200,this);
+        initPlayer(this);
         enemyManager = new EnemyManager(this);
         gameOverOverlay = new GameOverOverlay(this);
         timer = new StopWatch(this);
         topBar = new TopBar(this,timer,player);
         starMenu = new StarMenu(this);
 
+    }
+
+    private void initPlayer(Playing playing) {
+        int[] coord = LoadSave.getPlayerCoord(levelManager);
+        player = new Player(coord[0],coord[1],playing);
     }
 
     public Player getPlayer(){
@@ -68,8 +87,9 @@ public class Playing extends State implements Statemethods {
             enemyManager.update();
             checkCloseToBorder();
             timer.startTimer();
-            if(gameOver)
+            if(gameOver) {
                 timer.stop();
+            }
         }
     }
 
@@ -91,7 +111,8 @@ public class Playing extends State implements Statemethods {
         levelManager.draw(g,yLvlOffset);
         player.render(g,yLvlOffset);
         enemyManager.draw(g,yLvlOffset);
-        topBar.draw(g);
+        if(!gameOver)
+            topBar.draw(g);
 
         if(gameOver)
         {
@@ -99,6 +120,7 @@ public class Playing extends State implements Statemethods {
             if(timer.getElapsedTime() > 10) {
                 gameOverOverlay.draw(g);
             } else {
+                starMenu.setTime(timer);
                 starMenu.draw(g);
             }
         }
@@ -112,6 +134,7 @@ public class Playing extends State implements Statemethods {
         player.resetAll();
         enemyManager.resetAllEnemies();
         timer.resetAll();
+        timer.stop();
     }
 
     public void setGameOver(boolean gameOver) {
@@ -124,6 +147,8 @@ public class Playing extends State implements Statemethods {
     public void checkEnemyHitWithShuriken(Shuriken[] shurikens) {
         enemyManager.checkEnemyHitWithShuriken(shurikens);
     }
+
+    public StarMenu getStarMenu() {return starMenu;}
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -143,6 +168,10 @@ public class Playing extends State implements Statemethods {
     @Override
     public void mouseMoved(MouseEvent e) {
 
+    }
+
+    public void setMaxLvlOffset(int lvlOffset) {
+        this.maxLvlOffsetY = lvlOffset;
     }
 
     @Override
@@ -194,4 +223,11 @@ public class Playing extends State implements Statemethods {
         }
     }
 
+    public EnemyManager getEnemyManager() {return enemyManager;}
+
+    public void setLevelCompleted(boolean b) {
+        this.levelCompleted = b;
+    }
+
+    public LevelManager getLevelManager() {return levelManager;}
 }

@@ -19,8 +19,12 @@ public class Constants {
         public static final int PIGGY = 200;
 
         public static final int IDLE = 0;
-        public static final int HIT = 1;
-        public static final int DEAD = 2;
+        public static final int DEAD = 1;
+        public static final int HIT = 2;
+
+        public static final int BLOOD1 = 0;
+        public static final int BLOOD2 = 1;
+        public static final int BLOOD3 = 2;
 
         public static final int PIGGY_WIDTH_DEFAULT = 34 ;
         public static final int PIGGY_HEIGHT_DEFAULT = 28 ;
@@ -37,10 +41,10 @@ public class Constants {
                     switch (enemy_state) {
                         case IDLE:
                             return 11;
+                        case DEAD:
+                            return 6;
                         case HIT:
                             return 2;
-                        case DEAD:
-                            return 4;
                     }
             }
             return 0;
@@ -105,6 +109,11 @@ public class Constants {
             }
         }
 
+    }
+
+    public static class Level1 {
+        public static final float SECOND_STAR = 6;
+        public static final float THIRD_STAR = 4;
     }
 
 }

@@ -20,6 +20,7 @@ public class Player extends Entity {
     private BufferedImage[] idleAnim, RunAnim,attackAnim, RunAnimleft, jumpAnim,fallAnim;
 
     private int[][][] levelData;
+    private LevelManager levelManager;
 
     private int animTick, animIndex, animSpeed = 15;
     private boolean attackDelay = false;
@@ -34,7 +35,7 @@ public class Player extends Entity {
     private double airSpeed = 0f;
     private float gravity = 0.04f* Game.SCALE;
     private double jumpSpeed = -2.25* Game.SCALE;
-    private boolean inAir = false;
+    private boolean inAir = true;
 
     private static boolean canDoubleJump = true;
     private boolean firstJump = true;
@@ -47,7 +48,7 @@ public class Player extends Entity {
     private Rectangle2D.Float attackBox;
 
     private int flipX = 0;
-    private int flipW = 0;
+    private int flipW = 1;
     private boolean attackChecked = false;
     private Playing playing;
     public boolean hasMoved = false;
@@ -71,6 +72,14 @@ public class Player extends Entity {
         attackAnim = loadAnimations("Attack (SWORD).png");
 
         //attackAnim = loadAnimations("_Attack.png");
+    }
+
+    public void setPlayerPositionAfterLvlChanges(LevelManager levelManager) {
+        int[] coord = LoadSave.getPlayerCoord(levelManager);
+        this.x = coord[0];
+        this.y = coord[1];
+        this.hitbox.x = coord[0];
+        this.hitbox.y = coord[1];
     }
 
     public void throwShuriken() {
@@ -398,7 +407,7 @@ public class Player extends Entity {
     }
 
     public void resetAll() {
-        inAir = false;
+        inAir = true;
         attacking = false;
         moving = false;
         hasMoved = false;

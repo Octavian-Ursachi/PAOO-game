@@ -1,18 +1,43 @@
 package levels;
 
+import entities.Piggy;
+import main.Game;
+import utils.HelpMethods;
+
 import java.awt.image.BufferedImage;
-import java.nio.BufferOverflowException;
+import java.util.ArrayList;
 
 public class Level {
 
+    private BufferedImage img;
     private int[][][] lvlData;
+    private ArrayList<Piggy> pigs;
+    private int lvlTilesHeight;
+    private int maxTilesOffset;
+    private int maxLvlOffsetY;
 
-    private BufferedImage background;
 
-    public Level(int[][][] lvlData, BufferedImage background){
-        this.lvlData = lvlData;
-        this.background = background;
+    public Level(BufferedImage img){
+        this.img = img;
+        createLevelData();
+        createEnemies();
+        calcLvlOffsets();
+        
 
+    }
+
+    private void calcLvlOffsets() {
+        lvlTilesHeight = img.getWidth();
+        maxTilesOffset = lvlTilesHeight - Game.TILES_IN_HEIGHT;
+        maxLvlOffsetY = Game.TILES_SIZE * maxTilesOffset;
+    }
+
+    private void createEnemies() {
+        pigs = HelpMethods.GetPigs(img);
+    }
+
+    private void createLevelData() {
+        lvlData = HelpMethods.GetLevelData(img);
     }
 
     public int getSpriteIndex(int x, int y){
@@ -26,9 +51,12 @@ public class Level {
     public int[][][] getLevelData(){
         return lvlData;
     }
+    public int getLvlOffset() {
+        return maxLvlOffsetY;
+    }
+    public ArrayList<Piggy> getPigs() {
+        return pigs;
 
-    public BufferedImage getBackground(){
-        return background;
     }
 
 }
