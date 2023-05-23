@@ -1,8 +1,6 @@
 package utils;
 
-import entities.Piggy;
 import levels.LevelManager;
-import main.Game;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -12,9 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-
-import static utils.Constants.EnemyConstant.PIGGY;
 
 public class LoadSave {
 
@@ -27,7 +22,7 @@ public class LoadSave {
 
     public static final String PLAYER_JUMP_ATLAS = "Jump (32x32).png";
     public static final String LEVEL_ATLAS = "Terrain (16x16).png";
-    public static final String LEVEL_ONE_DATA = "lvls/1.png";
+    public static final String LEVEL_ONE_DATA = "lvls/2.png";
     public static final String MENU_BUTTONS = "button_atlas.png";
     public static final String MENU_BACKGROUND = "menu_background.png";
     public static final String MENU_BACKGROUND_GREEN = "Green.png";

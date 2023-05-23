@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
+import static main.Game.TILES_SIZE;
 import static utils.Constants.EnemyConstant.*;
 
 public class EnemyManager {
@@ -22,6 +23,7 @@ public class EnemyManager {
     private BufferedImage[][] piggyBloodArr;
     private ArrayList<Piggy> piggies = new ArrayList<>();
     private boolean allEnemyDead = false;
+    private int rotation = 1;
     public EnemyManager(Playing playing) {
         this.playing = playing;
         loadEnemyImager();
@@ -39,7 +41,7 @@ public class EnemyManager {
                 allEnemyDead = false;
             }
             else {
-                p.update();
+                p.updatePosAfterDeath();
                 //p.hitbox.x = 3000;
                 //p.hitbox.y = 3000;
             }
@@ -54,8 +56,10 @@ public class EnemyManager {
     }
 
     private void drawPigs(Graphics g,int yLvlOffset) {
+        Random random = new Random();
         for(Piggy p : piggies)
             if(p.isActive()) {
+                p.randomValue = random.nextInt(2) *2 -1;
                 if (p.x > playing.getPlayer().hitbox.x) {
                     g.drawImage(piggyArr[p.getEnemyState()][p.getAniIndex()], (int) p.getHitbox().x - PIGGY_DRAWOFFSET_X, (int) p.getHitbox().y - PIGGY_DRAWOFFSET_Y - yLvlOffset, PIGGY_WIDTH, PIGGY_HEIGHT, null);
                 } else {
@@ -63,19 +67,68 @@ public class EnemyManager {
 
                 }
             } else {
+                Graphics2D g2d = (Graphics2D)g;
+                p.updateAnimationTick();
+                rotation++;
+                if(rotation >= 360)
+                    rotation = 0;
+                float rotationX = p.getHitbox().x + p.getHitbox().width/2;
+                float rotationY = p.getHitbox().y + p.getHitbox().height/2;
                 if(!p.oneTimeDeadAnim) {
-                    //g.drawImage(piggyBloodArr[randomNum][deathAniIndex],(int) p.getHitbox().x - PIGGY_DRAWOFFSET_X, (int) p.getHitbox().y - PIGGY_DRAWOFFSET_Y - yLvlOffset, 128, 128, null);
-                    g.drawImage(piggyArr[p.getEnemyState()][p.getAniIndex()], (int) p.getHitbox().x - PIGGY_DRAWOFFSET_X, (int) p.getHitbox().y - PIGGY_DRAWOFFSET_Y - yLvlOffset, PIGGY_WIDTH, PIGGY_HEIGHT, null);
+                    g2d.rotate(Math.toRadians(rotation * p.randomValue), rotationX, rotationY);
+                    g2d.drawImage(piggyArr[p.getEnemyState()][p.getAniIndex()], (int) p.getHitbox().x - PIGGY_DRAWOFFSET_X, (int) p.getHitbox().y - PIGGY_DRAWOFFSET_Y - yLvlOffset, PIGGY_WIDTH, PIGGY_HEIGHT, null);
+                    g2d.rotate(-Math.toRadians(rotation * p.randomValue), rotationX, rotationY);
+                } else {
+                    g2d.rotate(Math.toRadians(rotation * p.randomValue), rotationX, rotationY);
+                    g.drawImage(piggyArr[p.getEnemyState()][2], (int) p.getHitbox().x - PIGGY_DRAWOFFSET_X, (int) p.getHitbox().y - PIGGY_DRAWOFFSET_Y - yLvlOffset, PIGGY_WIDTH, PIGGY_HEIGHT, null);
+                    g2d.rotate(-Math.toRadians(rotation * p.randomValue), rotationX, rotationY);
+
                 }
-                if(p.getAniIndex() == 5)
+                if(p.getAniIndex() >= 2)
                     p.oneTimeDeadAnim = true;
             }
 
     }
 
+//    //HIT/ROTATION
+//    Graphics2D g2d = (Graphics2D)g;
+//    Random random = new Random();
+//        if(!isDead)
+//    randomValue = random.nextInt(2) * 2 - 1; //get a value of 1 or -1
+//        if(isDead) {
+//        updateAnimationTick();
+//        rotation++;
+//        if(rotation >= 360)
+//            rotation = 0;
+//        float rotationX = hitbox.x+hitbox.width/2;
+//        float rotationY = hitbox.y+hitbox.height/2;
+//        if(!endHitAnim) {
+//            g2d.rotate(Math.toRadians(rotation * randomValue), rotationX, rotationY);
+//            g2d.drawImage(hitAnim[animIndex], (int) (hitbox.x - hitboxOffset) + flipX, (int) (hitbox.y - hitboxOffset) - lvlOffset, TILES_SIZE * 2 * flipW, TILES_SIZE * 2, null);
+//            g2d.rotate(-Math.toRadians(rotation * randomValue), rotationX, rotationY);
+//        } else {
+//            g2d.rotate(Math.toRadians(rotation * randomValue), rotationX, rotationY);
+//            g2d.drawImage(imageToRotate, (int) (hitbox.x - hitboxOffset) + flipX, (int) (hitbox.y - hitboxOffset) - lvlOffset, TILES_SIZE * 2 * flipW, TILES_SIZE * 2, null);
+//            g2d.rotate(-Math.toRadians(rotation * randomValue), rotationX, rotationY);
+//        }
+//
+//        if(animIndex >= 7) {
+//            endHitAnim = true;
+//        }
+//        return;
+//    }
+//    //HIT/ROTATION
+
     public void checkEnemyHit(Rectangle2D.Float attackBox) {
         for(Piggy p : piggies) {
             if (attackBox.intersects(p.getHitbox()) && p.isActive()) {
+                if(playing.getPlayer().hitbox.x < p.getHitbox().x) {
+                    p.setHitFromLeft(false);
+                    p.setHitFromRight(true);
+                } else {
+                    p.setHitFromLeft(true);
+                    p.setHitFromRight(false);
+                }
                 p.newState(DEAD);
             }
         }
@@ -85,6 +138,13 @@ public class EnemyManager {
             for(int i = 0 ; i < 3 ; i++) {
                 if (shurikens[i].getHitbox().intersects(p.getHitbox()) && p.isActive() && shurikens[i].active) {
                     p.newState(DEAD);
+                    if(shurikens[i].getHitbox().x < p.getHitbox().x) {
+                        p.setHitFromLeft(true);
+                        p.setHitFromRight(false);
+                    } else {
+                        p.setHitFromLeft(false);
+                        p.setHitFromRight(true);
+                    }
                 }
             }
         }
@@ -117,6 +177,7 @@ public class EnemyManager {
     }
 
     public void resetAllEnemies() {
+        rotation = 0;
         for(Piggy p : piggies) {
             p.resetEnemy();
         }

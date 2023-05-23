@@ -1,5 +1,7 @@
 package entities;
 
+import main.Game;
+
 import static utils.Constants.EnemyConstant.*;
 
 public abstract class Enemy extends Entity{
@@ -7,6 +9,14 @@ public abstract class Enemy extends Entity{
     private int aniIndex,enemyState,enemyType,deathAnimType;
     private int aniTick,aniSpeed = 25;
     protected boolean oneTimeDeadAnim = false;
+
+    protected float airSpeed = 0.f;
+    protected double jumpSpeed = -1* Game.SCALE;
+    protected float gravity = 0.04f;
+    protected boolean airSpeedChanged = false;
+    protected boolean hitFromLeft,hitFromRight;
+
+    protected int randomValue;
 
     protected boolean active = true;
 
@@ -17,7 +27,22 @@ public abstract class Enemy extends Entity{
         initHitbox(x,y,width,height);
     }
 
-    protected void newState(int enemyState) {
+    public void updatePosAfterDeath() {
+        if (!airSpeedChanged) {
+            airSpeed = (float) jumpSpeed;
+            airSpeedChanged = true;
+        }
+        if (hitFromLeft) {
+            hitbox.x--;
+            hitbox.y = (int) (hitbox.y + airSpeed);
+            airSpeed += gravity;
+        } else if (hitFromRight) {
+            hitbox.x++;
+            hitbox.y = (int) (hitbox.y + airSpeed);
+            airSpeed += gravity;
+        }
+    }
+        protected void newState(int enemyState) {
         this.enemyState = enemyState;
         if(this.enemyState == DEAD)
             active = false;
@@ -25,7 +50,7 @@ public abstract class Enemy extends Entity{
         aniIndex = 0;
     }
 
-    private void updateAnimationTick(){
+    protected void updateAnimationTick(){
         aniTick++;
         if(aniTick >= aniSpeed) {
             aniTick = 0;
@@ -39,6 +64,9 @@ public abstract class Enemy extends Entity{
     }
 
     public void resetEnemy() {
+        airSpeedChanged = false;
+        hitFromLeft = false;
+        hitFromRight = false;
         hitbox.x = x;
         hitbox.y = y-10;
         newState(IDLE);

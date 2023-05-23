@@ -6,6 +6,7 @@ import entities.Player;
 import entities.Shuriken;
 import levels.LevelManager;
 import main.Game;
+import objects.ObjectManager;
 import ui.GameOverOverlay;
 import ui.StarMenu;
 import ui.StopWatch;
@@ -20,7 +21,7 @@ import java.awt.geom.Rectangle2D;
 public class Playing extends State implements Statemethods {
 
     private Player player;
-
+    private ObjectManager objectManager;
     private EnemyManager enemyManager;
     private LevelManager levelManager;
     private GameOverOverlay gameOverOverlay;
@@ -52,6 +53,7 @@ public class Playing extends State implements Statemethods {
     }
     private void loadStartLevel() {
         enemyManager.loadEnemies(levelManager.getCurrentLevel());
+        objectManager.loadObjects(levelManager.getCurrentLevel());
     }
 
     private void calcLvlOffset() {
@@ -62,6 +64,7 @@ public class Playing extends State implements Statemethods {
         levelManager = new LevelManager(game);
         initPlayer(this);
         enemyManager = new EnemyManager(this);
+        objectManager = new ObjectManager(this);
         gameOverOverlay = new GameOverOverlay(this);
         timer = new StopWatch(this);
         topBar = new TopBar(this,timer,player);
@@ -83,6 +86,7 @@ public class Playing extends State implements Statemethods {
     public void update() {
         if(!gameOver) {
             levelManager.update();
+            objectManager.update();
             player.update();
             enemyManager.update();
             checkCloseToBorder();
@@ -90,6 +94,8 @@ public class Playing extends State implements Statemethods {
             if(gameOver) {
                 timer.stop();
             }
+        } else {
+            player.updatePosAfterDeath();
         }
     }
 
@@ -108,16 +114,19 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void draw(Graphics g) {
+        if(player.isDead)
+            gameOver = true;
+
         levelManager.draw(g,yLvlOffset);
         player.render(g,yLvlOffset);
         enemyManager.draw(g,yLvlOffset);
+        objectManager.draw(g,yLvlOffset);
         if(!gameOver)
             topBar.draw(g);
 
         if(gameOver)
         {
-            System.out.println(timer.getElapsedTime());
-            if(timer.getElapsedTime() > 10) {
+            if(timer.getElapsedTime() > 10 || player.isDead) {
                 gameOverOverlay.draw(g);
             } else {
                 starMenu.setTime(timer);
@@ -141,6 +150,9 @@ public class Playing extends State implements Statemethods {
         this.gameOver = gameOver;
     }
 
+    public void checkSpikesTouched(Player player) {
+        objectManager.checkSpikesTouched(player);
+    }
     public void checkEnemyHit(Rectangle2D.Float attackBox) {
         enemyManager.checkEnemyHit(attackBox);
     }
@@ -230,4 +242,6 @@ public class Playing extends State implements Statemethods {
     }
 
     public LevelManager getLevelManager() {return levelManager;}
+
+    public ObjectManager getObjectManager() {return objectManager;}
 }

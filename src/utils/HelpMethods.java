@@ -2,6 +2,7 @@ package utils;
 
 import entities.Piggy;
 import main.Game;
+import objects.Spikes;
 import org.ietf.jgss.GSSManager;
 
 import java.awt.*;
@@ -33,7 +34,7 @@ public class HelpMethods {
         float yIndex = y / Game.TILES_SIZE;
 
         int value = levelData[(int) yIndex][(int) xIndex][0];
-        if(value != 5 && value!=255)
+        if(value != 5 && value!=255 && value!=242)
             return true;
         return false;
     }
@@ -89,7 +90,7 @@ public class HelpMethods {
                 Color color = new Color(img.getRGB(i,j));
                 int tileType = color.getRed();
                 int rotation = color.getBlue();
-                if(tileType >= 242)
+                if(tileType >= 244)
                     tileType = 5;
                 if(rotation >= 36)
                     rotation = 0;
@@ -108,6 +109,20 @@ public class HelpMethods {
                 int entityType = color.getGreen();
                 if(entityType == PIGGY) {
                     list.add(new Piggy(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
+                }
+            }
+        return list;
+    }
+
+    public static ArrayList<Spikes> GetSpikes(BufferedImage img) {
+        ArrayList<Spikes> list = new ArrayList<>();
+        for(int j = 0 ; j < img.getHeight() ; j++)
+            for(int i = 0; i <img.getWidth(); i++)
+            {
+                Color color = new Color(img.getRGB(i,j));
+                int entityType = color.getRed();
+                if(entityType == Constants.GameObjectsConstants.SPIKES) {
+                    list.add(new Spikes(i * Game.TILES_SIZE, j * Game.TILES_SIZE,Constants.GameObjectsConstants.SPIKES));
                 }
             }
         return list;

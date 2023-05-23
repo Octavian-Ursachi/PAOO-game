@@ -16,7 +16,7 @@ public class GameOverOverlay {
 
     public void draw(Graphics g) {
         g.setColor(new Color(0,0,0,200));
-        g.fillRect(0,0, Game.GAME_WIDTH,Game.GAME_HEIGHT);
+        g.fillRect(Game.GAME_WIDTH/3,0, Game.GAME_WIDTH/3,Game.GAME_HEIGHT);
 
         g.setColor(Color.WHITE);
         g.drawString("GAME OVER",Game.GAME_WIDTH/2,150);

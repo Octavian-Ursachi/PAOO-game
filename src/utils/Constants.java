@@ -4,6 +4,25 @@ import main.Game;
 
 public class Constants {
 
+    public static class GameObjectsConstants {
+        public static final int ANI_SPEED = 25;
+        public static final int SPIKES = 242;
+        public static final int SPIKES_WIDTH_DEFAULT = 16;
+        public static final int SPIKES_HEIGHT_DEFAULT = 16;
+        public static final int SPIKES_WIDTH = (int) (Game.SCALE * SPIKES_WIDTH_DEFAULT);
+        public static final int SPIKES_HEIGHT = (int) (Game.SCALE * SPIKES_HEIGHT_DEFAULT);
+
+
+
+        public static int GetSpriteAmount(int object_type) {
+            switch(object_type) {
+                case SPIKES :
+                    return 1;
+            }
+            return 1;
+        }
+
+    }
     public static class ShurikenConstant {
         public static final int SHURIKEN_WIDTH_DEFAULT = 10;
         public static final int SHURIKEN_HEIGHT_DEFAULT = 2;
@@ -99,6 +118,9 @@ public class Constants {
                 }
                 case ATTACK -> {
                     return 1;
+                }
+                case HIT -> {
+                    return 7;
                 }
 
 

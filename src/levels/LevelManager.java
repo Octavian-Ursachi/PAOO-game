@@ -9,6 +9,7 @@ import utils.LoadSave;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BandCombineOp;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -27,7 +28,6 @@ public class LevelManager {
     public LevelManager(Game game) {
         this.game = game;
         importBackgroundSprites();
-        //levelSprite = LoadSave.GetSpriteAtlas(LoadSave.LEVEL_ATLAS);
         importOutsideSprites();
         levels = new ArrayList<>();
         buildAllLevels();
@@ -46,6 +46,7 @@ public class LevelManager {
         game.getPlaying().getEnemyManager().loadEnemies(newLevel);
         game.getPlaying().getPlayer().loadLevelData(newLevel.getLevelData());
         game.getPlaying().setMaxLvlOffset(newLevel.getLvlOffset());
+        game.getPlaying().getObjectManager().loadObjects(newLevel);
     }
 
     private void buildAllLevels() {
@@ -53,7 +54,21 @@ public class LevelManager {
         for (BufferedImage img : allLevels) {
             levels.add(new Level(img));
         }
+        setAllLevelsBackGround();
 
+    }
+
+    private void setAllLevelsBackGround() {
+        levels.get(0).setLevelBackground(backgroundSprite[0]);
+        levels.get(1).setLevelBackground(backgroundSprite[1]);
+        /*levels.get(2).setLevelBackground(backgroundSprite[0]);
+        levels.get(3).setLevelBackground(backgroundSprite[0]);
+        levels.get(4).setLevelBackground(backgroundSprite[0]);
+        levels.get(5).setLevelBackground(backgroundSprite[0]);
+        levels.get(6).setLevelBackground(backgroundSprite[0]);
+        levels.get(7).setLevelBackground(backgroundSprite[0]);
+        levels.get(8).setLevelBackground(backgroundSprite[0]);
+        levels.get(0).setLevelBackground(backgroundSprite[0]);*/
     }
 
     public void importBackgroundSprites() {
@@ -70,7 +85,7 @@ public class LevelManager {
 
     private void importOutsideSprites() {
         BufferedImage img = LoadSave.GetSpriteAtlas(LoadSave.LEVEL_ATLAS);
-        levelSprite = new BufferedImage[242];
+        levelSprite = new BufferedImage[243];
         for (int j = 0; j < 11; j++)
             for (int i = 0; i < 22; i++) {
                 int index = j * 22 + i;
@@ -89,18 +104,15 @@ public class LevelManager {
 
         for (int j = 0; j < levels.get(lvlIndex).getLevelData().length; j++)
             for (int i = 0; i <= Game.TILES_IN_WIDTH; i++) {
-                g.drawImage(backgroundSprite[5], j * 128, i * 128 + drawOffset - 128, 128, 128, null);
+                g.drawImage(levels.get(lvlIndex).getLevelBackground(), j * 128, i * 128 + drawOffset - 128, 128, 128, null);
             }
         for (int j = 0; j < levels.get(lvlIndex).getLevelData().length; j++)
             for (int i = 0; i < Game.TILES_IN_WIDTH; i++) {
                 int index = levels.get(lvlIndex).getSpriteIndex(i, j);
                 g.drawImage(levelSprite[index], i * Game.TILES_SIZE, j * Game.TILES_SIZE - lvlOffset, Game.TILES_SIZE, Game.TILES_SIZE, null);
-
             }
         //g.drawImage(levelSprite[17],0,0,null);
     }
-
-
     public void update() {
         if(levelChanged) {
             game.getPlaying().getPlayer().setPlayerPositionAfterLvlChanges(this);

@@ -14,5 +14,20 @@ public class Piggy extends  Enemy{
         initHitbox(x,y-10,(int)(22 * Game.SCALE),(int)(28 * Game.SCALE));
     }
 
+    public boolean isHitFromLeft() {
+        return hitFromLeft;
+    }
+
+    public void setHitFromLeft(boolean hitFromLeft) {
+        this.hitFromLeft = hitFromLeft;
+    }
+
+    public boolean isHitFromRight() {
+        return hitFromRight;
+    }
+
+    public void setHitFromRight(boolean hitFromRight) {
+        this.hitFromRight = hitFromRight;
+    }
 
 }

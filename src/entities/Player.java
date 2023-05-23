@@ -8,20 +8,16 @@ import utils.LoadSave;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 import static main.Game.SCALE;
 import static utils.Constants.PlayerConstants.*;
 import utils.HelpMethods;
 import static main.Game.TILES_SIZE;
-import levels.LevelManager;
 
 public class Player extends Entity {
-
-    private BufferedImage[] idleAnim, RunAnim,attackAnim, RunAnimleft, jumpAnim,fallAnim;
-
+    private BufferedImage[] idleAnim, RunAnim,attackAnim, jumpAnim,fallAnim,hitAnim;
     private int[][][] levelData;
-    private LevelManager levelManager;
-
     private int animTick, animIndex, animSpeed = 15;
     private boolean attackDelay = false;
     private int attackSpeed = 100;
@@ -30,6 +26,7 @@ public class Player extends Entity {
     private boolean left, up ,right ,down,jump;
     private float playerSpeed = 1.0f * SCALE;
     private float hitboxOffset = 9 * Game.SCALE; //pt hitbox
+    public boolean isDead = false;
 
     //Jumping/Gravity
     private double airSpeed = 0f;
@@ -39,14 +36,9 @@ public class Player extends Entity {
 
     private static boolean canDoubleJump = true;
     private boolean firstJump = true;
-
-
     private double fallSpeedAfterCollision = 0.5f * Game.SCALE;
-
-
     //AtackBox
     private Rectangle2D.Float attackBox;
-
     private int flipX = 0;
     private int flipW = 1;
     private boolean attackChecked = false;
@@ -57,6 +49,15 @@ public class Player extends Entity {
     private Shuriken[] shurikens = new Shuriken[3];
     private boolean throwShuriken;
 
+    //ROTATION/KILL
+    private boolean hitFromLeft;
+    private boolean hitFromRight;
+    private boolean hitFromAbove;
+    private static int rotation = 0;
+    private BufferedImage imageToRotate;
+    int randomValue;
+    boolean endHitAnim = false;
+    boolean airSpeedChanged = false;
 
     public Player(float x, float y, Playing playing) {
         super(x, y,TILES_SIZE*2,TILES_SIZE*2);
@@ -70,8 +71,35 @@ public class Player extends Entity {
         jumpAnim = loadAnimations(LoadSave.PLAYER_JUMP_ATLAS);
         fallAnim = loadAnimations("Fall (32x32).png");
         attackAnim = loadAnimations("Attack (SWORD).png");
+        hitAnim = loadAnimations("Hit (32x32).png");
+        imageToRotate = hitAnim[6];
 
         //attackAnim = loadAnimations("_Attack.png");
+    }
+
+    public void updatePosAfterDeath() {
+        if(!airSpeedChanged) {
+            airSpeed = jumpSpeed;
+            airSpeedChanged = true;
+        }
+        if(hitFromLeft) {
+            hitbox.x--;
+            hitbox.y = (int)(hitbox.y + airSpeed);
+            airSpeed += gravity;
+        } else if(hitFromRight) {
+            hitbox.x++;
+            hitbox.y = (int)(hitbox.y + airSpeed);
+            airSpeed += gravity;
+        } else if( hitFromAbove) {
+            hitbox.y = (int)(hitbox.y + airSpeed);
+            airSpeed += gravity;
+        }
+
+    }
+
+    public void kill() {
+        isDead = true;
+        playerAction = HIT;
     }
 
     public void setPlayerPositionAfterLvlChanges(LevelManager levelManager) {
@@ -123,6 +151,8 @@ public class Player extends Entity {
 
     public void update() {
         updateAttackBox();
+        if(moving)
+            playing.checkSpikesTouched(this);
 
         updatePos();
         if(attacking)
@@ -163,6 +193,35 @@ public class Player extends Entity {
     }
 
     public void render(Graphics g, int lvlOffset) {
+
+        //HIT/ROTATION
+        Graphics2D g2d = (Graphics2D)g;
+        Random random = new Random();
+        if(!isDead)
+            randomValue = random.nextInt(2) * 2 - 1; //get a value of 1 or -1
+        if(isDead) {
+            updateAnimationTick();
+            rotation++;
+            if(rotation >= 360)
+                rotation = 0;
+            float rotationX = hitbox.x+hitbox.width/2;
+            float rotationY = hitbox.y+hitbox.height/2;
+            if(!endHitAnim) {
+                g2d.rotate(Math.toRadians(rotation * randomValue), rotationX, rotationY);
+                g2d.drawImage(hitAnim[animIndex], (int) (hitbox.x - hitboxOffset) + flipX, (int) (hitbox.y - hitboxOffset) - lvlOffset, TILES_SIZE * 2 * flipW, TILES_SIZE * 2, null);
+                g2d.rotate(-Math.toRadians(rotation * randomValue), rotationX, rotationY);
+            } else {
+                g2d.rotate(Math.toRadians(rotation * randomValue), rotationX, rotationY);
+                g2d.drawImage(imageToRotate, (int) (hitbox.x - hitboxOffset) + flipX, (int) (hitbox.y - hitboxOffset) - lvlOffset, TILES_SIZE * 2 * flipW, TILES_SIZE * 2, null);
+                g2d.rotate(-Math.toRadians(rotation * randomValue), rotationX, rotationY);
+            }
+
+            if(animIndex >= 7) {
+                endHitAnim = true;
+            }
+            return;
+        }
+        //HIT/ROTATION
 
         if(playerAction == IDLE){
             g.drawImage(idleAnim[animIndex],(int)(hitbox.x - hitboxOffset) + flipX,(int)( hitbox.y - hitboxOffset) - lvlOffset,TILES_SIZE*2 * flipW,TILES_SIZE*2,null);
@@ -406,17 +465,37 @@ public class Player extends Entity {
         this.firstJump = released;
     }
 
+    public void setHitFromLeft(boolean hitFromLeft) {
+        this.hitFromLeft = hitFromLeft;
+    }
+
+    public void setHitFromRight(boolean hitFromRight) {
+        this.hitFromRight = hitFromRight;
+    }
+
+    public void setHitFromAbove(boolean hitFromAbove) {
+        this.hitFromAbove = hitFromAbove;
+    }
+
+    public boolean getInAir() {
+        return inAir;
+    }
+
     public void resetAll() {
         inAir = true;
         attacking = false;
         moving = false;
         hasMoved = false;
+        isDead = false;
+        endHitAnim = false;
+        airSpeedChanged = false;
         playerAction = IDLE;
         for(int i = 0 ; i < 3 ; i++) {
             shurikens[i].used = false;
             shurikens[i].active = false;
         }
 
+        rotation = 0;
         hitbox.x = x;
         hitbox.y = y;
 
