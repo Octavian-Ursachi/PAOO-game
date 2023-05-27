@@ -4,6 +4,7 @@ import gameStates.GameStates;
 import gameStates.GameStates.*;
 import entities.Player;
 import gameStates.Playing;
+import levels.LevelManager;
 import main.Game;
 import utils.Constants;
 import utils.LoadSave;
@@ -16,12 +17,14 @@ import java.text.DecimalFormat;
 
 public class StarMenu {
 
+    LevelManager levelManager;
     Playing playing;
     private final float x,y,width,height;
     private BufferedImage[] star;
     private float bestTime=0,currentTime=0,timeForNextStar=0;
 
-    public StarMenu(Playing playing) {
+    public StarMenu(Playing playing, LevelManager levelManager) {
+        this.levelManager = levelManager;
         this.playing = playing;
         this.x = (float)(Game.GAME_WIDTH) / 3;
         this.y = 0;
@@ -53,11 +56,11 @@ public class StarMenu {
         g.drawString(formattedBestTime, (int)(x+x*0.37), (int)y+150);
         //STARS
         int spacer = 80;
-        if(bestTime < Level1.THIRD_STAR)
+        if(bestTime < levelManager.getLevels().get(levelManager.getLvlIndex()).thirdStar)
         for(int i = 0 ; i < 3 ; i++) {
                 g.drawImage(star[0],(int)(x+x*0.23)+i*spacer,(int)(y+150),100,100,null);
         }
-        else if(bestTime < Level1.SECOND_STAR)
+        else if(bestTime < levelManager.getLevels().get(levelManager.getLvlIndex()).secondStar)
             for(int i = 0 ; i < 3 ; i++) {
                 if(i<=1)
                     g.drawImage(star[0],(int)(x+x*0.23)+i*spacer,(int)(y+150),100,100,null);
@@ -76,11 +79,11 @@ public class StarMenu {
         g.setFont(new Font("Arial", Font.BOLD, 120));
         g.drawString(formattedCurrentTime, (int)(x+x*0.25), (int)y+400);
 
-        if(currentTime < Level1.THIRD_STAR)
+        if(currentTime < levelManager.getLevels().get(levelManager.getLvlIndex()).thirdStar)
             for(int i = 0 ; i < 3 ; i++) {
                 g.drawImage(star[0],(int)(x+x*0.23)+i*spacer,(int)(y+400),100,100,null);
             }
-        else if(currentTime < Level1.SECOND_STAR)
+        else if(currentTime < levelManager.getLevels().get(levelManager.getLvlIndex()).secondStar)
             for(int i = 0 ; i < 3 ; i++) {
                 if(i<=1)
                     g.drawImage(star[0],(int)(x+x*0.23)+i*spacer,(int)(y+400),100,100,null);
@@ -94,7 +97,7 @@ public class StarMenu {
                 else
                     g.drawImage(star[1],(int)(x+x*0.23)+i*spacer,(int)(y+400),100,100,null);
             }
-        if(currentTime> Level1.THIRD_STAR) {
+        if(currentTime> levelManager.getLevels().get(levelManager.getLvlIndex()).thirdStar) {
             g.setFont(new Font("Arial", Font.BOLD, 50));
             g.drawString(formattedTimeForNextStar + " TO NEXT STAR", (int) (x), (int) y + 550);
         }
@@ -107,13 +110,17 @@ public class StarMenu {
     public void setTime(StopWatch timer) {
 
         this.currentTime = timer.getElapsedTime();
-        if(this.currentTime < this.bestTime)
-            this.bestTime = currentTime;
-        if(currentTime > Level1.SECOND_STAR) {
-            this.timeForNextStar = currentTime - Level1.SECOND_STAR;
-            if( currentTime > Level1.THIRD_STAR && currentTime < Level1.SECOND_STAR) {
-                this.timeForNextStar = currentTime - Level1.THIRD_STAR;
-            }
+        bestTime = levelManager.getLevels().get(levelManager.getLvlIndex()).bestTime;
+        if(this.currentTime < levelManager.getLevels().get(levelManager.getLvlIndex()).bestTime) {
+            levelManager.getLevels().get(levelManager.getLvlIndex()).bestTime = currentTime;
+            levelManager.getDataBaseManager().writeBestTime(currentTime,levelManager.getLvlIndex());
+
+        }
+        if(currentTime > levelManager.getLevels().get(levelManager.getLvlIndex()).secondStar) {
+            this.timeForNextStar = currentTime - levelManager.getLevels().get(levelManager.getLvlIndex()).secondStar;
+        }
+        if( currentTime > levelManager.getLevels().get(levelManager.getLvlIndex()).thirdStar && currentTime < levelManager.getLevels().get(levelManager.getLvlIndex()).secondStar) {
+            this.timeForNextStar = currentTime - levelManager.getLevels().get(levelManager.getLvlIndex()).thirdStar;
         }
 
     }
@@ -133,6 +140,12 @@ public class StarMenu {
                 break;
         }
 
+    }
+
+    public float getBestTime(){return  bestTime;}
+
+    public void setBestTime(float bestTime) {
+        this.bestTime = bestTime;
     }
 
 }

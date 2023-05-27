@@ -74,14 +74,14 @@ public class EnemyManager {
                     rotation = 0;
                 float rotationX = p.getHitbox().x + p.getHitbox().width/2;
                 float rotationY = p.getHitbox().y + p.getHitbox().height/2;
-                if(!p.oneTimeDeadAnim) {
-                    g2d.rotate(Math.toRadians(rotation * p.randomValue), rotationX, rotationY);
+                if(!p.oneTimeDeadAnim && p.hitbox.y <= Game.GAME_HEIGHT * Game.SCALE) {
+                    g2d.rotate(Math.toRadians(rotation * p.randomValue), rotationX, rotationY - yLvlOffset);
                     g2d.drawImage(piggyArr[p.getEnemyState()][p.getAniIndex()], (int) p.getHitbox().x - PIGGY_DRAWOFFSET_X, (int) p.getHitbox().y - PIGGY_DRAWOFFSET_Y - yLvlOffset, PIGGY_WIDTH, PIGGY_HEIGHT, null);
-                    g2d.rotate(-Math.toRadians(rotation * p.randomValue), rotationX, rotationY);
-                } else {
-                    g2d.rotate(Math.toRadians(rotation * p.randomValue), rotationX, rotationY);
+                    g2d.rotate(-Math.toRadians(rotation * p.randomValue), rotationX, rotationY - yLvlOffset);
+                } else if(p.oneTimeDeadAnim && p.hitbox.y <= Game.GAME_HEIGHT * Game.SCALE) {
+                    g2d.rotate(Math.toRadians(rotation * p.randomValue), rotationX, rotationY - yLvlOffset);
                     g.drawImage(piggyArr[p.getEnemyState()][2], (int) p.getHitbox().x - PIGGY_DRAWOFFSET_X, (int) p.getHitbox().y - PIGGY_DRAWOFFSET_Y - yLvlOffset, PIGGY_WIDTH, PIGGY_HEIGHT, null);
-                    g2d.rotate(-Math.toRadians(rotation * p.randomValue), rotationX, rotationY);
+                    g2d.rotate(-Math.toRadians(rotation * p.randomValue), rotationX, rotationY - yLvlOffset);
 
                 }
                 if(p.getAniIndex() >= 2)
@@ -89,35 +89,6 @@ public class EnemyManager {
             }
 
     }
-
-//    //HIT/ROTATION
-//    Graphics2D g2d = (Graphics2D)g;
-//    Random random = new Random();
-//        if(!isDead)
-//    randomValue = random.nextInt(2) * 2 - 1; //get a value of 1 or -1
-//        if(isDead) {
-//        updateAnimationTick();
-//        rotation++;
-//        if(rotation >= 360)
-//            rotation = 0;
-//        float rotationX = hitbox.x+hitbox.width/2;
-//        float rotationY = hitbox.y+hitbox.height/2;
-//        if(!endHitAnim) {
-//            g2d.rotate(Math.toRadians(rotation * randomValue), rotationX, rotationY);
-//            g2d.drawImage(hitAnim[animIndex], (int) (hitbox.x - hitboxOffset) + flipX, (int) (hitbox.y - hitboxOffset) - lvlOffset, TILES_SIZE * 2 * flipW, TILES_SIZE * 2, null);
-//            g2d.rotate(-Math.toRadians(rotation * randomValue), rotationX, rotationY);
-//        } else {
-//            g2d.rotate(Math.toRadians(rotation * randomValue), rotationX, rotationY);
-//            g2d.drawImage(imageToRotate, (int) (hitbox.x - hitboxOffset) + flipX, (int) (hitbox.y - hitboxOffset) - lvlOffset, TILES_SIZE * 2 * flipW, TILES_SIZE * 2, null);
-//            g2d.rotate(-Math.toRadians(rotation * randomValue), rotationX, rotationY);
-//        }
-//
-//        if(animIndex >= 7) {
-//            endHitAnim = true;
-//        }
-//        return;
-//    }
-//    //HIT/ROTATION
 
     public void checkEnemyHit(Rectangle2D.Float attackBox) {
         for(Piggy p : piggies) {

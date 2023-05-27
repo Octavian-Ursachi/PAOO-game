@@ -32,7 +32,8 @@ public class Game implements Runnable {
 
     private Game() {
 
-        LoadSave.GetAllLevels();
+        dataBaseManager = new DataBaseManager();
+        dataBaseManager.readLevels();
         initClasses();
 
         dataBaseManager = new DataBaseManager();
@@ -174,6 +175,10 @@ public class Game implements Runnable {
 
     public Playing getPlaying(){
         return  playing;
+    }
+
+    public DataBaseManager getDataBaseManager() {
+        return dataBaseManager;
     }
 
 }

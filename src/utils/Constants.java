@@ -134,8 +134,28 @@ public class Constants {
     }
 
     public static class Level1 {
+        public static final float SECOND_STAR = 4;
+        public static final float THIRD_STAR = 2;
+    }
+    public static class Level2 {
+        public static final float SECOND_STAR = 7;
+        public static final float THIRD_STAR = 5;
+    }
+    public static class Level3 {
+        public static final float SECOND_STAR = 5;
+        public static final float THIRD_STAR = 3;
+    }
+    public static class Level4 {
+        public static final float SECOND_STAR = 8;
+        public static final float THIRD_STAR = 6;
+    }
+    public static class Level5 {
         public static final float SECOND_STAR = 6;
         public static final float THIRD_STAR = 4;
+    }
+    public static class Level6 {
+        public static final float SECOND_STAR = 9;
+        public static final float THIRD_STAR = 8;
     }
 
 }

@@ -38,6 +38,8 @@ public class Playing extends State implements Statemethods {
 
     private boolean gameOver;
 
+    private boolean bestTimeWritten = false;
+
     public Playing(Game game) {
         super(game);
         initClasses();
@@ -68,7 +70,7 @@ public class Playing extends State implements Statemethods {
         gameOverOverlay = new GameOverOverlay(this);
         timer = new StopWatch(this);
         topBar = new TopBar(this,timer,player);
-        starMenu = new StarMenu(this);
+        starMenu = new StarMenu(this,levelManager);
 
     }
 
@@ -96,6 +98,7 @@ public class Playing extends State implements Statemethods {
             }
         } else {
             player.updatePosAfterDeath();
+            enemyManager.update();
         }
     }
 
@@ -131,6 +134,9 @@ public class Playing extends State implements Statemethods {
             } else {
                 starMenu.setTime(timer);
                 starMenu.draw(g);
+                if(!bestTimeWritten) {
+                    bestTimeWritten = true;
+                }
             }
         }
 
@@ -139,6 +145,7 @@ public class Playing extends State implements Statemethods {
     }
 
     public void resetAll() {
+        bestTimeWritten = false;
         gameOver = false;
         player.resetAll();
         enemyManager.resetAllEnemies();

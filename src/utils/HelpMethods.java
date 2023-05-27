@@ -43,11 +43,9 @@ public class HelpMethods {
 
         int currentTile = (int)(hitbox.x / Game.TILES_SIZE);
         int nextTile = (int)((hitbox.x +Game.TILES_SIZE) / Game.TILES_SIZE);
-        System.out.println(currentTile);
         if( xSpeed > 0) {
             //Right
             int nextXPos = nextTile * Game.TILES_SIZE;
-            System.out.println(hitbox.width + ":" + Game.TILES_SIZE);
             return  currentTile * Game.TILES_SIZE + 14*Game.SCALE ;
         }else {
             //Left

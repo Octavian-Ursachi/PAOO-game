@@ -206,11 +206,11 @@ public class Player extends Entity {
                 rotation = 0;
             float rotationX = hitbox.x+hitbox.width/2;
             float rotationY = hitbox.y+hitbox.height/2;
-            if(!endHitAnim) {
+            if(!endHitAnim && hitbox.y < Game.GAME_HEIGHT * SCALE) {
                 g2d.rotate(Math.toRadians(rotation * randomValue), rotationX, rotationY);
                 g2d.drawImage(hitAnim[animIndex], (int) (hitbox.x - hitboxOffset) + flipX, (int) (hitbox.y - hitboxOffset) - lvlOffset, TILES_SIZE * 2 * flipW, TILES_SIZE * 2, null);
                 g2d.rotate(-Math.toRadians(rotation * randomValue), rotationX, rotationY);
-            } else {
+            } else if(endHitAnim && hitbox.y < Game.GAME_HEIGHT * SCALE) {
                 g2d.rotate(Math.toRadians(rotation * randomValue), rotationX, rotationY);
                 g2d.drawImage(imageToRotate, (int) (hitbox.x - hitboxOffset) + flipX, (int) (hitbox.y - hitboxOffset) - lvlOffset, TILES_SIZE * 2 * flipW, TILES_SIZE * 2, null);
                 g2d.rotate(-Math.toRadians(rotation * randomValue), rotationX, rotationY);

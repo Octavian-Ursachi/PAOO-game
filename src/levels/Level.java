@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 public class Level {
 
+    public float bestTime;
+    public float secondStar, thirdStar;
     private BufferedImage backGround;
     private BufferedImage img;
     private int[][][] lvlData;

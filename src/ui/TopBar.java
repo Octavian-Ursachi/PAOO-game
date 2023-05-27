@@ -44,6 +44,7 @@ public class TopBar {
         else  {
             g.setColor(Color.RED);
             g.drawString(String.format("%.2f", timer.getElapsedTime()), Game.GAME_WIDTH / 2 - 25, Game.GAME_HEIGHT / 10);
+            g.setColor(Color.white);
         }
         //Shurikens
         g.setFont(new Font("Arial", Font.BOLD, 10));
