@@ -20,7 +20,7 @@ public abstract class Enemy extends Entity{
 
     protected boolean active = true;
 
-    public Enemy(float x, float y, int width, int height,int enemyType,int deathAnimType) {
+    public Enemy(float x, float y, int width, int height,int enemyType,int deathAnimType) throws EntityCoordsLessThanZeroException {
         super(x, y, width, height);
         this.enemyType = enemyType;
         this.deathAnimType = deathAnimType;

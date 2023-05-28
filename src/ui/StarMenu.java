@@ -13,6 +13,7 @@ import utils.Constants.Level1;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.nio.BufferOverflowException;
 import java.text.DecimalFormat;
 
 public class StarMenu {
@@ -20,8 +21,9 @@ public class StarMenu {
     LevelManager levelManager;
     Playing playing;
     private final float x,y,width,height;
-    private BufferedImage[] star;
+    private BufferedImage[] star,buttons;
     private float bestTime=0,currentTime=0,timeForNextStar=0;
+    private boolean starMenuActive = false;
 
     public StarMenu(Playing playing, LevelManager levelManager) {
         this.levelManager = levelManager;
@@ -37,8 +39,10 @@ public class StarMenu {
         star = new BufferedImage[2];
         star[0] = LoadSave.GetSpriteAtlas("Star.png");
         star[1] = LoadSave.GetSpriteAtlas("Star_frame.png");
-
-
+        buttons = new BufferedImage[3];
+        buttons[0] = LoadSave.GetSpriteAtlas("Esc-Key.png").getSubimage(0,0,32,32);
+        buttons[1] = LoadSave.GetSpriteAtlas("C-Key.png").getSubimage(0,0,32,32);
+        buttons[2] = LoadSave.GetSpriteAtlas("R-Key.png").getSubimage(0,0,32,32);
     }
     public void draw(Graphics g) {
 
@@ -102,12 +106,16 @@ public class StarMenu {
             g.drawString(formattedTimeForNextStar + " TO NEXT STAR", (int) (x), (int) y + 550);
         }
         g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawImage(buttons[2],(int)(x+x*0.25), (int)y+570,50,50,null);
         g.drawString("RETRY", (int)(x+x*0.44), (int)y+600);
-        g.drawString("LEVEL SELECT", (int)(x+x*0.36), (int)y+650);
+        g.drawImage(buttons[0],(int)(x+x*0.25), (int)y+620,50,50,null);
+        g.drawString("MENU", (int)(x+x*0.45), (int)y+650);
+        g.drawImage(buttons[1],(int)(x+x*0.25), (int)y+670,50,50,null);
         g.drawString("NEXT LEVEL", (int)(x+x*0.39), (int)y+700);
 
     }
     public void setTime(StopWatch timer) {
+        starMenuActive = true;
 
         this.currentTime = timer.getElapsedTime();
         bestTime = levelManager.getLevels().get(levelManager.getLvlIndex()).bestTime;
@@ -130,11 +138,20 @@ public class StarMenu {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_R :
                 playing.resetAll(); //retry
+                starMenuActive = false;
                 break;
             case KeyEvent.VK_ESCAPE :
                 GameStates.gameState = GameStates.MENU; //menu
+                starMenuActive = false;
                 break;
             case KeyEvent.VK_C :
+                if(starMenuActive) {
+                    playing.loadNextLevel();
+                    playing.getLevelManager().setLevelChanged(true);
+                    starMenuActive = false;
+                }
+                break;
+            case KeyEvent.VK_N:
                 playing.loadNextLevel();
                 playing.getLevelManager().setLevelChanged(true);
                 break;

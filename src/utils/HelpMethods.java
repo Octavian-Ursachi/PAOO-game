@@ -1,5 +1,6 @@
 package utils;
 
+import entities.EntityCoordsLessThanZeroException;
 import entities.Piggy;
 import main.Game;
 import objects.Spikes;
@@ -106,7 +107,11 @@ public class HelpMethods {
                 Color color = new Color(img.getRGB(i,j));
                 int entityType = color.getGreen();
                 if(entityType == PIGGY) {
-                    list.add(new Piggy(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
+                    try {
+                        list.add(new Piggy(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
+                    } catch (EntityCoordsLessThanZeroException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         return list;

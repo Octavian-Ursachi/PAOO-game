@@ -59,7 +59,7 @@ public class Player extends Entity {
     boolean endHitAnim = false;
     boolean airSpeedChanged = false;
 
-    public Player(float x, float y, Playing playing) {
+    public Player(float x, float y, Playing playing) throws EntityCoordsLessThanZeroException {
         super(x, y,TILES_SIZE*2,TILES_SIZE*2);
         this.playing = playing;
         initHitbox(x+hitboxOffset,y+hitboxOffset,17 * Game.SCALE,18 * Game.SCALE);
@@ -129,7 +129,11 @@ public class Player extends Entity {
 
     public void initShurikens() {
         for(int i = 0 ; i < 3 ; i++) {
-            shurikens[i] = new Shuriken(hitbox.x, hitbox.y, this,levelData);
+            try {
+                shurikens[i] = new Shuriken(hitbox.x, hitbox.y, this,levelData);
+            } catch (EntityCoordsLessThanZeroException e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }

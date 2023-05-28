@@ -13,11 +13,9 @@ import utils.Constants.GameObjectsConstants.*;
 
 public class ObjectManager {
 
-    private Playing playing;
     private BufferedImage spikesImgs;
     private ArrayList<Spikes> spikes;
     public ObjectManager(Playing playing) {
-        this.playing = playing;
         loadImgs();
         spikes = new ArrayList<>();
         spikes.add(new Spikes(300,300,0));

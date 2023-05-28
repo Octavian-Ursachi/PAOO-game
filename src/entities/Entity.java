@@ -10,12 +10,16 @@ public abstract class Entity {
 
     protected Rectangle2D.Float hitbox;
 
-    public Entity(float x, float y, int width, int height){
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-
+    public Entity(float x, float y, int width, int height) throws EntityCoordsLessThanZeroException {
+        try {
+            this.x = x;
+            this.y = y;
+            validateCoords();
+            this.width = width;
+            this.height = height;
+        } catch (EntityCoordsLessThanZeroException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void initHitbox(float x, float y, float width, float height) {
@@ -36,5 +40,10 @@ public abstract class Entity {
         return hitbox;
     }
 
+    private void validateCoords() throws EntityCoordsLessThanZeroException {
+        if(this.x < 0 || this.y < 0) {
+            throw new EntityCoordsLessThanZeroException("Entity coordinates can't be less than zero!!!");
+        }
+    }
 
 }

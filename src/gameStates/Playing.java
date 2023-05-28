@@ -2,6 +2,7 @@ package gameStates;
 
 
 import entities.EnemyManager;
+import entities.EntityCoordsLessThanZeroException;
 import entities.Player;
 import entities.Shuriken;
 import levels.LevelManager;
@@ -40,7 +41,7 @@ public class Playing extends State implements Statemethods {
 
     private boolean bestTimeWritten = false;
 
-    public Playing(Game game) {
+    public Playing(Game game) throws EntityCoordsLessThanZeroException {
         super(game);
         initClasses();
         
@@ -62,7 +63,7 @@ public class Playing extends State implements Statemethods {
         maxLvlOffsetY = levelManager.getCurrentLevel().getLvlOffset();
     }
 
-    private void initClasses() {
+    private void initClasses() throws EntityCoordsLessThanZeroException {
         levelManager = new LevelManager(game);
         initPlayer(this);
         enemyManager = new EnemyManager(this);
@@ -74,7 +75,7 @@ public class Playing extends State implements Statemethods {
 
     }
 
-    private void initPlayer(Playing playing) {
+    private void initPlayer(Playing playing) throws EntityCoordsLessThanZeroException {
         int[] coord = LoadSave.getPlayerCoord(levelManager);
         player = new Player(coord[0],coord[1],playing);
     }

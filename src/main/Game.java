@@ -1,5 +1,6 @@
 package main;
 
+import entities.EntityCoordsLessThanZeroException;
 import gameStates.Menu;
 import gameStates.GameStates;
 import gameStates.Playing;
@@ -61,7 +62,11 @@ public class Game implements Runnable {
 
     private void initClasses() {
         menu = new Menu(this);
-        playing = new Playing(this);
+        try {
+            playing = new Playing(this);
+        } catch (EntityCoordsLessThanZeroException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void startGameLoop()

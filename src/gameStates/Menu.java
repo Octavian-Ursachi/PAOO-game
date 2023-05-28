@@ -2,6 +2,7 @@ package gameStates;
 
 import main.Game;
 import ui.MenuButton;
+import ui.MenuButtonBuilder;
 import utils.LoadSave;
 
 import java.awt.*;
@@ -33,33 +34,26 @@ public class Menu extends State implements Statemethods {
     }
 
     private void loadButtons() {
-        buttons[0] = new MenuButton(GAME_WIDTH / 2,(int)(80* Game.SCALE),0,GameStates.PLAYING);
-        buttons[1] = new MenuButton(GAME_WIDTH / 2,(int)(120* Game.SCALE),1,GameStates.OPTIONS);
-        buttons[2] = new MenuButton(GAME_WIDTH / 2,(int)(160* Game.SCALE),2,GameStates.QUIT);
+        MenuButtonBuilder builder = new MenuButtonBuilder();
 
+        builder.xPos(GAME_WIDTH / 2)
+                .yPos((int) (80 * Game.SCALE))
+                .rowIndex(0)
+                .state(GameStates.PLAYING);
+        buttons[0] = builder.build();
+
+        builder.xPos(GAME_WIDTH / 2)
+                .yPos((int) (120 * Game.SCALE))
+                .rowIndex(1)
+                .state(GameStates.OPTIONS);
+        buttons[1] = builder.build();
+
+        builder.xPos(GAME_WIDTH / 2)
+                .yPos((int) (160 * Game.SCALE))
+                .rowIndex(2)
+                .state(GameStates.QUIT);
+        buttons[2] = builder.build();
     }
-
-
-//    public void render(Graphics g) {
-//        Graphics2D g2d = (Graphics2D) g;
-//        Font fnt0 = new Font("arial",Font.BOLD,50);
-//        g.setFont(fnt0);
-//        g.setColor(Color.black);
-//        g.drawString("NINJA FROGGY",GAME_WIDTH/3,GAME_HEIGHT/6);
-//
-//
-//        Font fnt1 = new Font("arial", Font.BOLD,30);
-//        g.setFont(fnt1);
-//        g.drawString("Play", playButton.x+19,playButton.y+30);
-//        g2d.draw(playButton);
-//        g.drawString("Edit", editorButton.x+19,editorButton.y+30);
-//        g2d.draw(editorButton);
-//        g.drawString("Quit", quitButton.x+19,quitButton.y+30);
-//        g2d.draw(quitButton);
-//        g2d.draw(editorButton);
-//
-//
-//    }
 
     @Override
     public void update() {

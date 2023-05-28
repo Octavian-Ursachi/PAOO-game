@@ -22,7 +22,7 @@ public class Shuriken extends Entity{
     public boolean used;
     public boolean active;
 
-    public Shuriken(float x, float y,Player player,int levelData[][][]) {
+    public Shuriken(float x, float y,Player player,int levelData[][][]) throws EntityCoordsLessThanZeroException {
         super(x, y, SHURIKEN_WIDTH,SHURIKEN_HEIGHT);
         this.levelData = levelData;
         this.player = player;
